@@ -1,8 +1,8 @@
 # This file may be used to create an environment using:
 # $ conda create --name <env> --file <this file>
 # platform: win-64
-ca-certificates=2021.10.8=h5b45459_0
-certifi=2021.10.8=py37h03978a9_1
+ca-certificates=2021.10.26=haa95532_4
+certifi=2021.10.8=py37haa95532_2
 click=8.0.4=py37h03978a9_0
 colorama=0.4.4=pyh9f0ad1d_0
 flask=2.0.0=pyhd8ed1ab_0
@@ -10,13 +10,14 @@ importlib-metadata=4.11.1=py37h03978a9_0
 itsdangerous=2.1.0=pyhd8ed1ab_0
 jinja2=3.0.3=pyhd8ed1ab_0
 markupsafe=2.1.0=py37hcc03f2d_0
-openssl=1.1.1l=h8ffe710_0
+openssl=1.1.1m=h2bbff1b_0
 pip=21.2.4=py37haa95532_0
 python=3.7.11=h6244533_0
 python-dotenv=0.19.2=pypi_0
 python_abi=3.7=2_cp37m
 setuptools=58.0.4=py37haa95532_0
 sqlite=3.37.2=h2bbff1b_0
+sqlite3=3.8.6=0
 typing_extensions=4.1.1=pyha770c72_0
 vc=14.2=h21ff451_1
 vs2015_runtime=14.27.29016=h5e58377_2
