@@ -17,15 +17,29 @@ def get_users():
     # return query_db('select * from user')
     return response
 
-@user_bp.route("/get_phone")
-def get_phone():
+@user_bp.route("/get_info")
+def get_all_info():
     data = request.json
     if(data.get('Email_Id') is None):
-        return jsonify({"message": []}), 200
+        return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
+    
+    userData = {"Email_Id": data.get("Email_Id")}
+    
+    # Fetch mobile Numbers
     query_res = query_db('select DISTINCT Mobile_Number from User_Mobile_Number WHERE Email_Id = ?', (data.get('Email_Id'), ))
+    userData["Mobile_Number"] = query_res
+
+    # Fetch Addresses
+    query_res = query_db('select DISTINCT * from Address WHERE Email_Id = ?', (data.get('Email_Id'), ))
+    userData["Address"] = query_res
+
+    # Fetch Name
+    query_res = query_db('select Name from User WHERE Email_Id = ?', (data.get('Email_Id'), ), one=True)
+    userData["Name"] = query_res["Name"]
+
     response = make_response(
                 jsonify(
-                    {"message": query_res}
+                    {"message": userData}
                 ),
                 200,
             )
@@ -39,8 +53,7 @@ def add_users():
     # return data
     query_res = True
     if(data.get('Email_Id') is None):
-        return jsonify({"message": False}), 200
-
+        return make_response(jsonify({"message": False}), 200)
     if(data.get('Name') is not None):
         query_res = query_commit_db(
             """
@@ -72,9 +85,8 @@ def add_users():
             INSERT INTO LoginDetails (Email_ID, Password) values
             (?, ?)
             """,
-            (data['Email_Id'], data['Password'],)
+            [(data['Email_Id'], data['Password'],)]
         )
     
-    print(query_res)
 
-    return jsonify({"message": query_res}), 200
+    return make_response(jsonify({"message": query_res}), 200)
