@@ -1,4 +1,3 @@
-from email import message
 from flask import Blueprint, make_response, request, jsonify
 from APP.utils import query_db, query_commit_db
 
@@ -60,7 +59,8 @@ def add_users():
             INSERT INTO User (Email_ID, Name) values
             (?, ?)
             """,
-            [(data['Email_Id'], data['Name'])]
+            (data['Email_Id'], data['Name']),
+            one=True
         )
 
     if(data.get('Mobile_Number') is not None):

@@ -1,5 +1,7 @@
 from flask import g
 import sqlite3
+import traceback
+import sys
 # DB 
 DATABASE = './APP/Database/mysql.db'
 SCHEMA = './Database/mysql.sql'
@@ -26,9 +28,17 @@ def query_db(query, args=(), one=False):
 def query_commit_db(query, args=(), one=False):
     try:
         db = get_db()
-        db.executemany(query, args)
+        if(one):
+            db.execute(query, args)
+        else:
+            db.executemany(query, args)
         db.commit()
         return True
-    except:
+    except sqlite3.Error as er:
+        print('SQLite error: %s' % (' '.join(er.args)))
+        print("Exception class is: ", er.__class__)
+        print('SQLite traceback: ')
+        exc_type, exc_value, exc_tb = sys.exc_info()
+        print(traceback.format_exception(exc_type, exc_value, exc_tb))
         return False
 
