@@ -1,4 +1,4 @@
-from flask import Flask, url_for, g
+from flask import Flask, url_for, g, render_template
 from .routes import base_bp
 from APP.utils import query_db, get_db, SCHEMA
 
@@ -28,10 +28,11 @@ def close_connection(exception):
 @app.route('/')
 def index():
     # cur = get_db().cursor()
-    for user in query_db('select * from user'):
-        print(user)
+    # for user in query_db('select * from user'):
+    #     print(user)
     # return query_db('select * from user')
-    return "Hi"
+    # return "Hi"
+    return render_template("home.html")
     
 
 
