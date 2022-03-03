@@ -38,7 +38,9 @@ def index():
 def login():
     return render_template("login.html")
     
-
+@app.route('/account')
+def account():
+    return render_template("account.html")
 
 @app.route("/map")
 def get_map():
