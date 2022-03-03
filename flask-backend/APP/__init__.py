@@ -5,7 +5,7 @@ from APP.utils import query_db, get_db, SCHEMA
 # from flask_cors import CORS
 
 # Main application and configuration
-app=Flask(__name__)
+app = Flask(__name__)
 
 # Maybe required in future
 # cors = CORS(app)
@@ -32,7 +32,16 @@ def index():
     #     print(user)
     # return query_db('select * from user')
     # return "Hi"
-    return render_template("home.html")
+    return render_template("base.html")
+
+@app.route('/login')
+def login():
+    # cur = get_db().cursor()
+    # for user in query_db('select * from user'):
+    #     print(user)
+    # return query_db('select * from user')
+    # return "Hi"
+    return render_template("login.html")
     
 
 
