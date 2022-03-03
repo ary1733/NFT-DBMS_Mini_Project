@@ -1,12 +1,15 @@
-from flask import Flask, url_for, g, render_template
+from flask import Flask, redirect, url_for, g, render_template, session
 from .routes import base_bp
 from APP.utils import query_db, get_db, SCHEMA
+import os
 
 # from flask_cors import CORS
 
 # Main application and configuration
 app = Flask(__name__)
 
+# For Session
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 # Maybe required in future
 # cors = CORS(app)
 app.register_blueprint(base_bp, url_prefix="/api")
@@ -37,6 +40,11 @@ def index():
 @app.route('/login')
 def login():
     return render_template("login.html")
+
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    return redirect(url_for('login'))
     
 @app.route('/account')
 def account():

@@ -1,4 +1,4 @@
-from flask import Blueprint, make_response, request, jsonify
+from flask import Blueprint, make_response, request, jsonify, session
 from APP.utils import query_db, query_commit_db
 
 
@@ -94,6 +94,7 @@ def add_users():
 
 @user_bp.route("/login/" , methods = ["POST"])
 def login():
+    session.pop("user", None)
     data = request.json
     if(data.get('email') is None):
         return make_response(jsonify({"message": "Email not sent"}), 200)
@@ -110,6 +111,9 @@ def login():
             )
     print(query_res)
     if(query_res is not None ):
+        session['user'] = {
+            'email': query_res['Email_Id']
+        }
         response = make_response(
                 jsonify(
                     {
