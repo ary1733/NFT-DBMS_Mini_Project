@@ -58,24 +58,9 @@
         </div>
         <div class="col-lg-8">
           <div class="card mb-4">
-            <div class="card-body">
-              <div class="row">
-                <div class="col-sm-3">
-                  <p class="mb-0">Full Name</p>
-                </div>
-                <div class="col-sm-9">
-                  <p class="text-muted mb-0">Johnatan Smith</p>
-                </div>
-              </div>
-              <hr>
-              <div class="row">
-                <div class="col-sm-3">
-                  <p class="mb-0">Email</p>
-                </div>
-                <div class="col-sm-9">
-                  <p class="text-muted mb-0">{{ g.user['email'] if g.get('user') is not none else 'NONE' }}</p>
-                </div>
-              </div>
+            <div class="card-body" id = "user-data">
+              
+              
               <hr>
               <div class="row">
                 <div class="col-sm-3">
@@ -164,6 +149,55 @@
         </div>
       </div>
     </div>
+    <script>
+      function createChild(key, value)
+      {
+        let div = document.createElement('div')
+        div.innerHTML = `
+        <div class="col-sm-3">
+                  <p class="mb-0">${key}</p>
+                </div>
+                <div class="col-sm-9">
+                  <p class="text-muted mb-0">${value}</p>
+        </div>
+        `
+        div.setAttribute('class', 'row');
+        document.getElementById('user-data').append(document.createElement('hr'))
+        document.getElementById('user-data').append(div)
+      }
+
+      
+      document.addEventListener("DOMContentLoaded", function(event) {
+        fetch("/api/user/get_info", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        })
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (data) {
+            console.log(data);
+            createChild('Name', data.message.Name);
+            createChild('Email', data.message.Email_Id);
+            
+            
+
+            // if (data.message == "success") {
+            //   next_url = document.getElementById('next_url').value;
+            //   window.location.href = next_url;
+            // } else {
+            //   document.getElementById("error").innerHTML =
+            //     "Invalid email or password";
+            // }
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+      // Your code to run since DOM is loaded and ready
+      }); 
+    </script>
   </section>
 
 {% endblock %}
