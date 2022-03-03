@@ -1,5 +1,5 @@
 from flask import Blueprint, make_response, request, jsonify, session
-from APP.utils import query_db, query_commit_db
+from APP.utils import query_db, query_commit_db, api_session_required
 
 
 user_bp = Blueprint('user', __name__)
@@ -17,23 +17,24 @@ def get_users():
     return response
 
 @user_bp.route("/get_info")
+@api_session_required # this checks for session
 def get_all_info():
-    data = request.json
-    if(data.get('Email_Id') is None):
+    data = session.get('user')
+    if(data.get('email') is None):
         return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
     
-    userData = {"Email_Id": data.get("Email_Id")}
+    userData = {"Email_Id": data.get("email")}
     
     # Fetch mobile Numbers
-    query_res = query_db('select DISTINCT Mobile_Number from User_Mobile_Number WHERE Email_Id = ?', (data.get('Email_Id'), ))
+    query_res = query_db('select DISTINCT Mobile_Number from User_Mobile_Number WHERE Email_Id = ?', (data.get('email'), ))
     userData["Mobile_Number"] = query_res
 
     # Fetch Addresses
-    query_res = query_db('select DISTINCT * from Address WHERE Email_Id = ?', (data.get('Email_Id'), ))
+    query_res = query_db('select DISTINCT * from Address WHERE Email_Id = ?', (data.get('email'), ))
     userData["Address"] = query_res
 
     # Fetch Name
-    query_res = query_db('select Name from User WHERE Email_Id = ?', (data.get('Email_Id'), ), one=True)
+    query_res = query_db('select Name from User WHERE Email_Id = ?', (data.get('email'), ), one=True)
     userData["Name"] = query_res["Name"]
 
     response = make_response(

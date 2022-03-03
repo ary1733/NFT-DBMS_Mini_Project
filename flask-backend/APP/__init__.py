@@ -1,6 +1,6 @@
 from flask import Flask, redirect, url_for, g, render_template, session
 from .routes import base_bp
-from APP.utils import query_db, get_db, SCHEMA
+from APP.utils import query_db, get_db, SCHEMA, login_required
 import os
 
 # from flask_cors import CORS
@@ -46,8 +46,14 @@ def logout():
     session.pop('user', None)
     return redirect(url_for('login'))
     
+
 @app.route('/account')
+@login_required
 def account():
+    # g is lika a global data that exist for a single request
+    g.user = session.get('user')
+    # print(g.user)
+    # we can access g in templates (check email field)
     return render_template("account.html")
 
 @app.route("/map")

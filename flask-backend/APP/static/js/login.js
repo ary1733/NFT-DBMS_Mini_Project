@@ -26,7 +26,8 @@ submitform.addEventListener("submit", function (event) {
     .then(function (data) {
       console.log(data);
       if (data.message == "success") {
-        window.location.href = "/account";
+        next_url = document.getElementById('next_url').value;
+        window.location.href = next_url;
       } else {
         document.getElementById("error").innerHTML =
           "Invalid email or password";

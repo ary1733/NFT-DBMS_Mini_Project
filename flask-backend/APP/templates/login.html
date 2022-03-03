@@ -19,7 +19,8 @@
             <input type="password" id="form-floating" class="form-control form-control-lg password" />
             <label class="form-label" for="form-floating">Password</label>
           </div>
-
+          <!-- Hidden next destination -->
+          <input type="hidden" id="next_url" value="{{ request.args.get('next', '/account') }}">
           <div class="d-flex justify-content-around align-items-center mb-4">
             <!-- Checkbox -->
             <div class="form-check">
