@@ -6,9 +6,10 @@ from APP.utils import query_db, query_commit_db
 item_bp = Blueprint('item', __name__)
 
 # View 
-@item_bp.route("/get")
+@item_bp.route("/get",methods=["POST"])
 def get_item():
     data = request.json
+    print(data)
     if(data.get('Email_Id') is None):
         return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
     
