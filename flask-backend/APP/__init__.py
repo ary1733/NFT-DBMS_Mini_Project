@@ -36,11 +36,6 @@ def index():
 
 @app.route('/login')
 def login():
-    # cur = get_db().cursor()
-    # for user in query_db('select * from user'):
-    #     print(user)
-    # return query_db('select * from user')
-    # return "Hi"
     return render_template("login.html")
     
 

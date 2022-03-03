@@ -7,16 +7,16 @@
         <img src="{{ url_for('static',filename='images/login.svg') }}" class="img-fluid" alt="Phone image">
       </div>
       <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
-        <form>
+        <form id="submitform">
           <!-- Email input -->
           <div class="form-outline mb-4 form-floating">
-            <input type="email" id="floatingInput" class="form-control form-control-lg " />
+            <input type="email" id="floatingInput" class="form-control form-control-lg email" />
             <label for="floatingInput">Email address</label>
           </div>
 
           <!-- Password input -->
           <div class="form-outline mb-4 form-floating">
-            <input type="password" id="form-floating" class="form-control form-control-lg" />
+            <input type="password" id="form-floating" class="form-control form-control-lg password" />
             <label class="form-label" for="form-floating">Password</label>
           </div>
 
@@ -30,7 +30,7 @@
           </div>
 
           <!-- Submit button -->
-          <button type="submit" class="btn btn-primary btn-lg btn-block">Sign in</button>
+          <button type="submit" class="btn btn-primary btn-lg btn-block" id="btnSubmit">Sign in</button>
 
           <!-- <div class="divider d-flex align-items-center my-4">
                   <p class="text-center fw-bold mx-3 mb-0 text-muted">OR</p>
@@ -47,5 +47,5 @@
     </div>
   </div>
 </section>
-
+<script src="{{ url_for('static',filename='js/login.js') }}"></script>
 {% endblock %}
