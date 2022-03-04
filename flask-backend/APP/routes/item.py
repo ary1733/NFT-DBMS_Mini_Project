@@ -1,9 +1,14 @@
-# Item Base Structure
+import datetime
 
+# Item Base Structure
 from flask import Blueprint, make_response, request, jsonify
 from APP.utils import query_db, query_commit_db
 
 item_bp = Blueprint('item', __name__)
+
+#TODO: Make Advert Id as Primary Key with Autoincrement
+#TODO: Make Bid Id as Primary Key with Autoincrement
+#TODO: Add API routes for search_item, bid, add_advert
 
 # View 
 @item_bp.route("/get",methods=["POST"])
@@ -86,5 +91,67 @@ def update_item():
         True
     )
     return make_response(jsonify({"message": query_res}), 200)
+
+#* Bhushan
+def search_item():
+    data = request.json
+    searchTerm = data.get('SearchTerm')
+    # ! CHECKS
+    if(searchTerm is None):
+        return make_response(jsonify({"message": "Not a Valid Search Term"}), 200)
     
+    query_res = query_db(
+        """
+        GET Item 
+        WHERE Name LIKE ?
+        """,
+        (searchTerm),
+        True
+    )
+    return make_response(jsonify({"message": query_res}), 200)
+
+def bid():
+    data = request.json
+     # ! CHECKS
+    if(data.get('Advert_Id') is None):
+        return make_response(jsonify({"message": "Not a Valid Advert Id"}), 200)
+    if(data.get('Email_Id') is None):
+        return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
+    if(data.get('Cost') is None):
+        return make_response(jsonify({"message": "Not a Valid Cost"}), 200)
+    
+    query_res = query_commit_db(
+        """
+        INSERT INTO Bid (Advert_Id, Email_Id, Cost) values
+        (?, ?, ?)
+        """,
+        (data.get('Advert_Id'), data.get('Email_Id'), data.get('Cost')),
+        True
+    )
+    return make_response(jsonify({"message": query_res}), 200)
+        
+def add_advert():
+    data = request.json
+    # ! CHECKS
+    if(data.get('Email_Id') is None):
+        return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
+    if(data.get('Item_Id') is None):
+        return make_response(jsonify({"message": "Not a Valid Item Id"}), 200)
+    if(data.get('Cost') is None):
+        return make_response(jsonify({"message": "Not a Valid Cost"}), 200)
+
+    query_res = query_commit_db(
+        """
+        INSERT INTO SaleAdvertisement (Email_Id,Item_Id, Date) values
+        (?, ?, ?);
+        SELECT Advert_Id as AID FROM SaleAdvertisement WHERE Email_Id = ? AND Item_Id = ?;
+        INSERT INTO Bid (Advert_Id, Email_Id, Cost) values
+        (AID, ?, ?);
+        """,
+        (data.get('Email_Id'), data.get('Item_Id'), datetime.datetime.now(), data.get('Email_Id'), data.get('Item_Id'), data.get('Email_Id'), data.get('Cost')),
+        True
+    )
+
+    return make_response(jsonify({"message": query_res}), 200)
+
 
