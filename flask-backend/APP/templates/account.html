@@ -20,9 +20,8 @@
           <div class="card mb-4">
             <div class="card-body text-center">
               <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar" class="rounded-circle img-fluid" style="width: 150px;">
-              <h5 class="my-3">John Smith</h5>
-              <p class="text-muted mb-1">Full Stack Developer</p>
-              <p class="text-muted mb-4">Bay Area, San Francisco, CA</p>
+              <h5 class="my-3" id="username" >John Smith</h5>
+              <p class="text-muted mb-4" id="useremail">Full Stack Developer</p>
               <div class="d-flex justify-content-center mb-2">
                 <button type="button" class="btn btn-primary">Follow</button>
                 <button type="button" class="btn btn-outline-primary ms-1">Message</button>
@@ -60,34 +59,6 @@
           <div class="card mb-4">
             <div class="card-body" id = "user-data">
               
-              
-              <hr>
-              <div class="row">
-                <div class="col-sm-3">
-                  <p class="mb-0">Phone</p>
-                </div>
-                <div class="col-sm-9">
-                  <p class="text-muted mb-0">(097) 234-5678</p>
-                </div>
-              </div>
-              <hr>
-              <div class="row">
-                <div class="col-sm-3">
-                  <p class="mb-0">Mobile</p>
-                </div>
-                <div class="col-sm-9">
-                  <p class="text-muted mb-0">(098) 765-4321</p>
-                </div>
-              </div>
-              <hr>
-              <div class="row">
-                <div class="col-sm-3">
-                  <p class="mb-0">Address</p>
-                </div>
-                <div class="col-sm-9">
-                  <p class="text-muted mb-0">Bay Area, San Francisco, CA</p>
-                </div>
-              </div>
             </div>
           </div>
           <div class="row">
@@ -162,7 +133,6 @@
         </div>
         `
         div.setAttribute('class', 'row');
-        document.getElementById('user-data').append(document.createElement('hr'))
         document.getElementById('user-data').append(div)
       }
 
@@ -179,9 +149,20 @@
           })
           .then(function (data) {
             console.log(data);
+            document.getElementById('username').innerText = data.message.Name
+            document.getElementById('useremail').innerText = data.message.Email_Id
             createChild('Name', data.message.Name);
+            document.getElementById('user-data').append(document.createElement('hr'))
             createChild('Email', data.message.Email_Id);
-            
+            data.message.Mobile_Number.forEach(element => {
+              document.getElementById('user-data').append(document.createElement('hr'))
+              createChild('Mobile', element.Mobile_Number);
+            });
+            data.message.Address.forEach(element => {
+              document.getElementById('user-data').append(document.createElement('hr'))
+              let addressText = `${element.House_No}, ${element.Street}, ${element.City}, ${element.Country}, Pincode-${element.PinCode}`
+              createChild('Address', addressText);
+            });
             
 
             // if (data.message == "success") {
