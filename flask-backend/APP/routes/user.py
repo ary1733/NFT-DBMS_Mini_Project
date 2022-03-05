@@ -52,8 +52,8 @@ def add_users():
     print(data)
     # return data
     query_res = True
-    if(data.get('Email_Id') is None):
-        return make_response(jsonify({"message": False}), 200)
+    if(data.get('Email_Id') is None or data.get('Name') is None or data.get('Password') is None):
+        return make_response(jsonify({"message": "failure"}), 200)
     if(data.get('Name') is not None):
         query_res = query_commit_db(
             """
@@ -90,7 +90,7 @@ def add_users():
         )
     
 
-    return make_response(jsonify({"message": query_res}), 200)
+    return make_response(jsonify({"message": "success" if query_res else "failure"}), 200)
 
 
 @user_bp.route("/login/" , methods = ["POST"])
