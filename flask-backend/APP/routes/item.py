@@ -1,8 +1,8 @@
 import datetime
 
 # Item Base Structure
-from flask import Blueprint, make_response, request, jsonify
-from APP.utils import query_db, query_commit_db
+from flask import Blueprint, make_response, request, jsonify, session
+from APP.utils import query_db, query_commit_db, api_session_required
 
 item_bp = Blueprint('item', __name__)
 
@@ -11,15 +11,16 @@ item_bp = Blueprint('item', __name__)
 #TODO: Add API routes for search_item, bid, add_advert
 
 # View 
-@item_bp.route("/get",methods=["POST"])
+@item_bp.route("/get",methods=["GET"])
+@api_session_required
 def get_item():
-    data = request.json
+    data = session.get('user')
     print(data)
-    if(data.get('Email_Id') is None):
+    if(data.get('email') is None):
         return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
     
     # Get Items using Email Id
-    query_res = query_db('select * from Item WHERE Email_Id = ?', (data.get('Email_Id'), ))
+    query_res = query_db('select * from Item WHERE Email_Id = ?', (data.get('email'), ))
     
     response = make_response(
                 jsonify(

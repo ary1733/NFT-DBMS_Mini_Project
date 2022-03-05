@@ -125,3 +125,16 @@ def login():
                 200,
             )
     return response
+
+@user_bp.route("/getwishlist")
+@api_session_required
+def getwishlist():
+    data = session.get('user')
+    query_res = query_db('''
+    SELECT Item.* FROM Wishlist
+    JOIN User on Wishlist.Email_Id = User.Email_Id
+    JOIN Item on Wishlist.Item_Id = Item.Item_Id
+    WHERE User.Email_Id = ?'''
+    , (data.get('email'),),
+    )
+    return jsonify(query_res)
