@@ -22,12 +22,13 @@ CREATE TABLE Item
   FOREIGN KEY (Email_Id) REFERENCES User(Email_Id) ON DELETE CASCADE
 );
 
-CREATE TABLE SaleAdvertisement
-(
-  AdvertisementId INTEGER PRIMARY KEY  AUTOINCREMENT,
-  Date DATE NOT NULL, 
-  Item_Id INT NOT NULL,
-  FOREIGN KEY (Item_Id) REFERENCES Item(Item_Id) ON DELETE CASCADE
+CREATE TABLE "SaleAdvertisement" (
+	"AdvertisementId"	INTEGER,
+	"Date"	DATE NOT NULL,
+	"Item_Id"	INT NOT NULL,
+	"End_Date"	DATE,
+	FOREIGN KEY("Item_Id") REFERENCES "Item"("Item_Id") ON DELETE CASCADE,
+	PRIMARY KEY("AdvertisementId" AUTOINCREMENT)
 );
 
 CREATE TABLE Transactions

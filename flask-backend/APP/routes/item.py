@@ -106,7 +106,7 @@ def search_item():
         GET Item 
         WHERE Name LIKE ?
         """,
-        (searchTerm),
+        (searchTerm, ),
         True
     )
     return make_response(jsonify({"message": query_res}), 200)
@@ -130,7 +130,8 @@ def bid():
         True
     )
     return make_response(jsonify({"message": query_res}), 200)
-        
+
+@item_bp.route('/add_advert', methods=["POST"])        
 def add_advert():
     data = request.json
     # ! CHECKS
@@ -143,19 +144,31 @@ def add_advert():
 
     query_res = query_commit_db(
         """
-        INSERT INTO SaleAdvertisement (Email_Id,Item_Id, Date) values
-        (?, ?, ?);
-        SELECT Advert_Id as AID FROM SaleAdvertisement WHERE Email_Id = ? AND Item_Id = ?;
-        INSERT INTO Bid (Advert_Id, Email_Id, Cost) values
-        (AID, ?, ?);
+        INSERT INTO SaleAdvertisement (Item_Id, Date) values
+        (?, ?);
         """,
-        (data.get('Email_Id'), data.get('Item_Id'), datetime.datetime.now(), data.get('Email_Id'), data.get('Item_Id'), data.get('Email_Id'), data.get('Cost')),
+        (data.get('Item_Id'), datetime.datetime.now()),
+        True)
+    AID = query_db(
+        """
+        select seq from sqlite_sequence where name=?;
+        """,
+        ("SaleAdvertisement",),
+        True)
+    query_res &= query_commit_db(
+        """
+        INSERT INTO Bid (AdvertisementId, Bidder_Id, Cost, Date) values
+        (?, ?, ?, ?);
+        """,
+        (AID.get("seq"), data.get('Email_Id'), data.get('Cost'), datetime.datetime.now(),),
         True
     )
 
     return make_response(jsonify({"message": query_res}), 200)
 
 # Harshit
+@item_bp.route("/write_review", methods=["POST"])
+# @api_session_required
 def write_review():
     data = request.json
     if(data.get('Email_Id') is None):
@@ -168,19 +181,34 @@ def write_review():
         return make_response(jsonify({"message": "Not a Valid Rating"}), 200)
     query_res = query_commit_db(
         """
-        INSERT INTO Review (Email_Id, Item_Id, Review, Rating) values
-        (?, ?, ?, ?)
+        INSERT INTO Reviews (Email_Id, Item_Id, Review, Rating, Date) values
+        (?, ?, ?, ?, ?)
         """,
-        (data.get('Email_Id'), data.get('Item_Id'), data.get('Review'), data.get('Rating')),
+        (data.get('Email_Id'), data.get('Item_Id'), data.get('Review'), data.get('Rating'), datetime.datetime.now()),
         True
     )
     return make_response(jsonify({"message": query_res}), 200)
+
+@item_bp.route("/get_review", methods=["POST"])
+# @api_session_required
+def get_review():
+    data = request.json
+    if(data.get('Item_Id') is None):
+        return make_response(jsonify({"message": "Not a Valid Item Id"}), 200)
+    query_res = query_db(
+        """
+        SELECT * FROM Reviews WHERE Item_Id = ?;
+        """,
+        (data.get('Item_Id'),)
+    )
+    return make_response(jsonify({"message": query_res}), 200)
+
 
 def sell_item():
     data = request.json
     if(data.get('Email_Id') is None):
         return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
-    if(data.get('Advertisement_Id') is None):
+    if(data.get('AdvertisementId') is None):
         return make_response(jsonify({"message": "Not a Valid Advertisement Id"}), 200)
     query_res = query_commit_db(
         """
