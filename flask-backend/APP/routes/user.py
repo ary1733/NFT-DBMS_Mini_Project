@@ -138,3 +138,19 @@ def getwishlist():
     , (data.get('email'),),
     )
     return jsonify(query_res)
+
+# Harshit
+def like_item():
+    data = request.json
+    if(data.get('Email_Id') is None):
+        return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
+    if(data.get('Item_Id') is None):
+        return make_response(jsonify({"message": "Not a Valid Item Id"}), 200)
+    query_res = query_commit_db(
+        """
+        INSERT into Wishlist (Email_Id, Item_Id) values (?, ?)
+        """,
+        (data.get('Email_Id'), data.get('Item_Id')),
+        True
+    )
+    return make_response(jsonify({"message": query_res}), 200)

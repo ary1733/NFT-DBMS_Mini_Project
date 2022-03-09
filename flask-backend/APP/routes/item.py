@@ -155,4 +155,75 @@ def add_advert():
 
     return make_response(jsonify({"message": query_res}), 200)
 
+# Harshit
+def write_review():
+    data = request.json
+    if(data.get('Email_Id') is None):
+        return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
+    if(data.get('Item_Id') is None):
+        return make_response(jsonify({"message": "Not a Valid Item Id"}), 200)
+    if(data.get('Review') is None):
+        return make_response(jsonify({"message": "Not a Valid Review"}), 200)
+    if(data.get('Rating') is None):
+        return make_response(jsonify({"message": "Not a Valid Rating"}), 200)
+    query_res = query_commit_db(
+        """
+        INSERT INTO Review (Email_Id, Item_Id, Review, Rating) values
+        (?, ?, ?, ?)
+        """,
+        (data.get('Email_Id'), data.get('Item_Id'), data.get('Review'), data.get('Rating')),
+        True
+    )
+    return make_response(jsonify({"message": query_res}), 200)
 
+def sell_item():
+    data = request.json
+    if(data.get('Email_Id') is None):
+        return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
+    if(data.get('Advertisement_Id') is None):
+        return make_response(jsonify({"message": "Not a Valid Advertisement Id"}), 200)
+    query_res = query_commit_db(
+        """
+        UPDATE SaleAdvertisement
+        SET End_Date = ?
+        WHERE
+        Advert_Id = ?;
+        SELECT Cost as cost, Email_Id as eid FROM Bid WHERE Advert_Id = ?
+        ORDER BY Cost DESC LIMIT 1;
+        SELECT Item_Id as iid FROM SaleAdvertisement WHERE Advert_Id = ?;
+        UPDATE Item
+        SET
+        Email_Id = eid
+        WHERE
+        Item_Id = iid;
+        INSERT INTO Transactons (Cost, Date, Item_Id, BuyerEmail_Id, SellerEmail_Id) values
+        (cost, ?, iid, eid, ?);
+        """,
+        (datetime.datetime.now(), data.get('Advertisement_Id'), data.get('Advertisement_Id'), data.get('Advertisement_Id'), datetime.datetime.now(), data.get('Email_Id'), data.get('Email_Id')),
+        True
+    )
+    return make_response(jsonify({"message": query_res}), 200)
+
+def get_history():
+    data = request.json
+    if(data.get('Item_Id') is None):
+        return make_response(jsonify({"message": "Not a Valid Item Id"}), 200)
+    query_res = query_db(
+        """
+        with t as (
+            SELECT * FROM Transactons
+            WHERE Item_Id = ?
+        )
+        with recursive rec_history(seller, buyer) as (
+            select SellerEmail_Id, BuyerEmail_Id
+            from t
+            union
+            select rec_history.seller, t.BuyerEmail_Id
+            from rec_history, t
+            where rec_history.buyer = t.SellerEmail_Id
+        )
+        SELECT * FROM rec_history
+        """,
+        (data.get('Item_Id'), )
+    )
+    return make_response(jsonify({"message": query_res}), 200)
