@@ -28,6 +28,10 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
+@app.route('/favicon.ico')
+def favicon():
+    return app.send_static_file('favicon.ico')
+
 @app.route('/')
 def index():
     # cur = get_db().cursor()
@@ -35,20 +39,25 @@ def index():
     #     print(user)
     # return query_db('select * from user')
     # return "Hi"
-    return render_template("base.html",cssfile="css/base.css")
+    return render_template("base.html")
 
 @app.route('/login')
 def login():
+    # Logout if already logged in
+    logout()
     return render_template("login.html",cssfile="css/login.css")
+
+@app.route('/register')
+def register():
+    # Logout if already logged in
+    logout()
+    return render_template("register.html")
 
 @app.route('/logout')
 def logout():
     session.pop('user', None)
     return redirect(url_for('login'))
-
-@app.route('/register')
-def register():
-    return render_template("register.html",cssfile="css/register.css")
+    
 
 @app.route('/account')
 @login_required

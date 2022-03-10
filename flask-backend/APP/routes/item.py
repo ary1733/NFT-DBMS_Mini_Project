@@ -186,8 +186,8 @@ def write_review():
         True
     )
     return make_response(jsonify({"message": query_res}), 200)
-
-@item_bp.route("/get_review", methods=["GET"])
+# Fetch can't request get with body, hence we need to use post
+@item_bp.route("/get_review", methods=["POST"])
 # @api_session_required
 def get_review():
     data = request.json

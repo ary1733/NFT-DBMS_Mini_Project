@@ -16,8 +16,8 @@ submitform.addEventListener("submit", function (event) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      email: email,
-      password: password,
+      Email_Id: email,
+      Password: password,
     }),
   })
     .then(function (response) {
