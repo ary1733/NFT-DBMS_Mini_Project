@@ -23,11 +23,7 @@ CREATE TABLE Item
 );
 
 CREATE TABLE "SaleAdvertisement" (
-<<<<<<< HEAD
-	"AdvertisementId"	INTEGER,
-=======
 	"AdvertisementId"	INTEGER ,
->>>>>>> a11a61e7ef3ff3fa38bb1ead3ea9b65d96264646
 	"Date"	DATE NOT NULL,
 	"Item_Id"	INT NOT NULL,
 	"End_Date"	DATE,
