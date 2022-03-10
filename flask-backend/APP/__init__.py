@@ -35,17 +35,20 @@ def index():
     #     print(user)
     # return query_db('select * from user')
     # return "Hi"
-    return render_template("base.html")
+    return render_template("base.html",cssfile="css/base.css")
 
 @app.route('/login')
 def login():
-    return render_template("login.html")
+    return render_template("login.html",cssfile="css/login.css")
 
 @app.route('/logout')
 def logout():
     session.pop('user', None)
     return redirect(url_for('login'))
-    
+
+@app.route('/register')
+def register():
+    return render_template("register.html",cssfile="css/register.css")
 
 @app.route('/account')
 @login_required
