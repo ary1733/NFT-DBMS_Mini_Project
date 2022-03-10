@@ -45,7 +45,7 @@ def index():
 def login():
     # Logout if already logged in
     logout()
-    return render_template("login.html")
+    return render_template("login.html",cssfile="css/login.css")
 
 @app.route('/register')
 def register():

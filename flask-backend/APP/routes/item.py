@@ -6,8 +6,6 @@ from APP.utils import query_db, query_commit_db, api_session_required
 
 item_bp = Blueprint('item', __name__)
 
-#TODO: Make Advert Id as Primary Key with Autoincrement
-#TODO: Make Bid Id as Primary Key with Autoincrement
 #TODO: Add API routes for search_item, bid, add_advert
 
 # View 
@@ -188,7 +186,7 @@ def write_review():
         True
     )
     return make_response(jsonify({"message": query_res}), 200)
-
+# Fetch can't request get with body, hence we need to use post
 @item_bp.route("/get_review", methods=["POST"])
 # @api_session_required
 def get_review():
@@ -203,33 +201,88 @@ def get_review():
     )
     return make_response(jsonify({"message": query_res}), 200)
 
-
+@item_bp.route("/sell/", methods=["POST"])
 def sell_item():
     data = request.json
-    if(data.get('Email_Id') is None):
+    email_id = data.get('Email_Id')
+    advert_id = data.get('AdvertisementId')
+
+    # ! CHECKS
+    if(email_id is None):
         return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
-    if(data.get('AdvertisementId') is None):
+    if(advert_id is None):
         return make_response(jsonify({"message": "Not a Valid Advertisement Id"}), 200)
+    
+    
+    # ! if Advertisement Exists
+    advert = query_db(
+        """
+        SELECT count(*) as cnt FROM SaleAdvertisement 
+        WHERE AdvertisementId = ?
+        and
+        End_Date is NULL;
+        """,
+        (advert_id,),
+    )
+    advert = advert[0]
+    if(advert.get("cnt") == 0):
+        return make_response(jsonify({"message": "Advertisement does not exist"}), 200)
+    
+    # ! Should be checked while creating the advertisement
+    if(advert.get("cnt") > 1):
+        return make_response(jsonify({"message": "Advertisement is not unique"}), 200)
+
     query_res = query_commit_db(
         """
         UPDATE SaleAdvertisement
         SET End_Date = ?
         WHERE
-        Advert_Id = ?;
-        SELECT Cost as cost, Email_Id as eid FROM Bid WHERE Advert_Id = ?
-        ORDER BY Cost DESC LIMIT 1;
-        SELECT Item_Id as iid FROM SaleAdvertisement WHERE Advert_Id = ?;
-        UPDATE Item
-        SET
-        Email_Id = eid
-        WHERE
-        Item_Id = iid;
-        INSERT INTO Transactons (Cost, Date, Item_Id, BuyerEmail_Id, SellerEmail_Id) values
-        (cost, ?, iid, eid, ?);
-        """,
-        (datetime.datetime.now(), data.get('Advertisement_Id'), data.get('Advertisement_Id'), data.get('Advertisement_Id'), datetime.datetime.now(), data.get('Email_Id'), data.get('Email_Id')),
+        AdvertisementId = ?
+    """,
+        (datetime.datetime.now(), advert_id),
         True
     )
+
+    highest_bid = query_db(
+        """
+        SELECT Cost as cost, Bidder_Id as eid FROM Bid WHERE AdvertisementId = ?
+        ORDER BY Cost DESC LIMIT 1
+        """,
+        (advert_id,),
+    )
+
+    highest_bid = highest_bid[0]
+
+    item = query_db(
+        """
+        SELECT Item_Id as iid FROM SaleAdvertisement WHERE AdvertisementId = ?
+        """,
+        (advert_id,),
+    )
+
+    item = item[0]
+
+    query_res &= query_commit_db(
+        """
+        UPDATE Item
+        SET
+        Email_Id = ?
+        WHERE
+        Item_Id = ?
+        """,
+        (highest_bid.get('eid'), item.get('iid')),
+        True
+    )
+
+    query_res &= query_commit_db(
+        """
+        INSERT INTO Transactions (Cost, Date, Item_Id, BuyerEmail_Id, SellerEmail_Id) values
+        (?, ?, ?, ?, ?);
+        """,
+        (highest_bid.get('cost'), datetime.datetime.now(), item.get('iid'), email_id, highest_bid.get('eid'),),
+        True
+    )
+
     return make_response(jsonify({"message": query_res}), 200)
 
 def get_history():
