@@ -150,7 +150,6 @@ def add_advert():
     AID = query_db(
         """
         select seq from sqlite_sequence where name=?;
-<<<<<<< HEAD
         """,
         ("SaleAdvertisement",),
         True)
@@ -159,16 +158,6 @@ def add_advert():
         INSERT INTO Bid (AdvertisementId, Bidder_Id, Cost, Date) values
         (?, ?, ?, ?);
         """,
-=======
-        """,
-        ("SaleAdvertisement",),
-        True)
-    query_res &= query_commit_db(
-        """
-        INSERT INTO Bid (AdvertisementId, Bidder_Id, Cost, Date) values
-        (?, ?, ?, ?);
-        """,
->>>>>>> a11a61e7ef3ff3fa38bb1ead3ea9b65d96264646
         (AID.get("seq"), data.get('Email_Id'), data.get('Cost'), datetime.datetime.now(),),
         True
     )
@@ -198,11 +187,7 @@ def write_review():
     )
     return make_response(jsonify({"message": query_res}), 200)
 
-<<<<<<< HEAD
-@item_bp.route("/get_review", methods=["POST"])
-=======
 @item_bp.route("/get_review", methods=["GET"])
->>>>>>> a11a61e7ef3ff3fa38bb1ead3ea9b65d96264646
 # @api_session_required
 def get_review():
     data = request.json
@@ -216,11 +201,7 @@ def get_review():
     )
     return make_response(jsonify({"message": query_res}), 200)
 
-<<<<<<< HEAD
-
-=======
 @item_bp.route("/sell/", methods=["POST"])
->>>>>>> a11a61e7ef3ff3fa38bb1ead3ea9b65d96264646
 def sell_item():
     data = request.json
     email_id = data.get('Email_Id')
@@ -229,11 +210,7 @@ def sell_item():
     # ! CHECKS
     if(email_id is None):
         return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
-<<<<<<< HEAD
-    if(data.get('AdvertisementId') is None):
-=======
     if(advert_id is None):
->>>>>>> a11a61e7ef3ff3fa38bb1ead3ea9b65d96264646
         return make_response(jsonify({"message": "Not a Valid Advertisement Id"}), 200)
     
     
