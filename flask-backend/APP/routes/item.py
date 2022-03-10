@@ -6,8 +6,6 @@ from APP.utils import query_db, query_commit_db, api_session_required
 
 item_bp = Blueprint('item', __name__)
 
-#TODO: Make Advert Id as Primary Key with Autoincrement
-#TODO: Make Bid Id as Primary Key with Autoincrement
 #TODO: Add API routes for search_item, bid, add_advert
 
 # View 

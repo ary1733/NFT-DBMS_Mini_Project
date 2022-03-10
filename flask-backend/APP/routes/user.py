@@ -97,13 +97,13 @@ def add_users():
 def login():
     session.pop("user", None)
     data = request.json
-    if(data.get('email') is None):
+    if(data.get('Email_Id') is None):
         return make_response(jsonify({"message": "Email not sent"}), 200)
     
-    if(data.get('password') is None):
+    if(data.get('Password') is None):
         return make_response(jsonify({"message": "Password not sent"}), 200)
     
-    query_res = query_db('select Email_Id from LoginDetails WHERE Email_Id = ? and Password = ?', (data.get('email'), data.get('password')), True)
+    query_res = query_db('select Email_Id from LoginDetails WHERE Email_Id = ? and Password = ?', (data.get('Email_Id'), data.get('Password')), True)
     response = make_response(
                 jsonify(
                     {"message": "failure"}
