@@ -69,7 +69,7 @@ def add_users():
             """
             INSERT INTO User_Mobile_Number (Mobile_Number, Email_id) values (?, ?);
             """,
-            [(number, data['Email_Id'],) for number in data['Mobile_Number']]
+            [(number.get('Mobile_Number'), data['Email_Id'],) for number in data['Mobile_Number']]
         )
 
     if(data.get('Address') is not None):
@@ -77,7 +77,7 @@ def add_users():
             """
             INSERT INTO Address (House_No, Street, City, Country, PinCode, Email_Id) values (?, ?, ?, ?, ?, ?);
             """,
-            [(House_No, Street, City, Country, PinCode, data['Email_Id'],) for House_No, Street, City, Country, PinCode in data['Address']]
+            [(addr['House_No'], addr.get('Street'), addr.get('City'), addr.get('Country'), addr.get('PinCode'), data['Email_Id'],) for addr in data['Address']]
         )
     
     if(data.get('Password') is not None):
@@ -90,6 +90,68 @@ def add_users():
         )
     
 
+    return make_response(jsonify({"message": "success" if query_res else "failure"}), 200)
+
+@user_bp.route("/update/" , methods = ["POST"])
+@api_session_required
+def update():
+    data = request.json
+    if(data.get('Email_Id') is None or data.get('Email_Id') != session.get('user').get('email')):
+        return make_response(jsonify({"message": "Email not valid"}), 200)
+    query_res = True
+
+    if(data.get('Name') is not None):
+        query_res &= query_commit_db(
+            '''
+            UPDATE User 
+            SET Name = ?
+            WHERE Email_Id = ?
+            ''', 
+            (data.get('Name'), data.get('Email_Id')),
+            True
+        )
+    
+    if(data.get('Mobile_Number') is not None):
+        query_res &= query_commit_db(
+            '''
+            DELETE FROM User_Mobile_Number 
+            WHERE Email_Id = ?
+            ''', 
+            (data.get('Email_Id'), ),
+            True
+        )
+        query_res &= query_commit_db(
+            """
+            INSERT INTO User_Mobile_Number (Mobile_Number, Email_id) values (?, ?);
+            """,
+            [(number.get('Mobile_Number'), data.get('Email_Id'),) for number in data.get('Mobile_Number')]
+        )
+    if(data.get('Address') is not None):
+        query_res &= query_commit_db(
+            '''
+            DELETE FROM Address 
+            WHERE Email_Id = ?
+            ''', 
+            (data.get('Email_Id'), ),
+            True
+        )
+        query_res &= query_commit_db(
+            """
+            INSERT INTO Address (House_No, Street, City, Country, PinCode, Email_Id) values (?, ?, ?, ?, ?, ?);
+            """,
+            [(addr['House_No'], addr.get('Street'), addr.get('City'), addr.get('Country'), addr.get('PinCode'), data['Email_Id'],) for addr in data['Address']]
+        )
+    if(data.get('Password') is not None):
+        query_res &= query_commit_db(
+            """
+            UPDATE LoginDetails 
+            SET  Password = ?
+            WHERE Email_Id = ?
+            """,
+            (data['Password'], data['Email_Id'],),
+            True
+        )
+    
     return make_response(jsonify({"message": "success" if query_res else "failure"}), 200)
 
 

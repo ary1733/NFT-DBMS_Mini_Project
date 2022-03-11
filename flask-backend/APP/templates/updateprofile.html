@@ -1,0 +1,242 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="row gutters">
+    <div class="col-xl-3 col-lg-3 col-md-12 col-sm-12 col-12">
+    <div class="card h-100">
+        <div class="card-body">
+            <div class="account-settings">
+                <div class="user-profile">
+                    <div class="user-avatar">
+                        <img src="{{ url_for('static',filename='favicon.ico')}}" alt="NFTians">
+                    </div>
+                    <h5 class="user-name" name="display_name"></h5>
+                    <h6 class="user-email" name="display_email_id"></h6>
+                </div>
+                <div class="about">
+                    <h5>Quote From Developer</h5>
+                    <p>Always remember that you are absolutely unique. Just like everyone else.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <div class="col-xl-9 col-lg-9 col-md-12 col-sm-12 col-12">
+    <div class="card h-100">
+        <div class="card-body" id="main-card">
+            <div class="row gutters mb-2">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <h6 class="mb-2 text-primary">Personal Details</h6>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label for="user_name">Name</label>
+                        <input type="text" class="form-control"name="user_name" id="user_name" placeholder="Enter full name">
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label for="email_id">Email</label>
+                        <input type="email" class="form-control"name="email_id" id="email_id" value="{{g.user.get('email')}}" readonly>
+                    </div>
+                </div>
+                <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control"name="password" id="password" placeholder="Enter password, leave blank if you don't want to change it">
+                    </div>
+                </div>
+            </div>
+            <div id="address-list">
+            <!-- Here we'll insert the addresses -->
+            </div>
+            <div id="phone-list">
+              <!-- Here we'll insert the phone numbers -->
+            </div>
+            <div class="row gutters">
+                <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="text-right">
+                        <a href="{{ url_for('account') }}"><button type="button" class="btn btn-secondary">Cancel</button></a>
+                        <button type="button" id="update" name="update" class="btn btn-primary" onclick="updateRoutine(event)">Update</button>
+                        <button type="button" id="addAddress" name="addAddress" class="btn btn-primary" onClick="addAddressElement()"><i class="fa fa-address-book"></i> Add a new address</button>
+                        <button type="button" id="addPhone" name="addPhone" class="btn btn-primary" onClick="addPhoneElement()"><i class="fa fa-phone"></i> Add a new PhoneNo.</button>
+                      </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    <script>
+      
+      function removeThisBlock(event) {
+        if(confirm("Are you sure you want to remove this."))
+        {
+          event.target.parentElement.parentElement.remove();
+        }
+      }
+
+      function addPhoneElement(phoneInfo){
+        if(phoneInfo == null)
+        {
+          phoneInfo = {Mobile_Number: "",};
+        }
+        let newPhoneForm = document.createElement("form");
+        newPhoneForm.innerHTML = 
+        `
+        <div class="row gutters justify-content-center">
+          <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+              <h6 class="mt-3 mb-2 text-primary">Mobile Number</h6>
+          </div>
+          <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+              <div class="form-group">
+                  <label for="Mobile_Number">Mobile No.</label>
+                  <input type="text" name="Mobile_Number" class="form-control" value="${phoneInfo.Mobile_Number}" placeholder="Enter Phone No">
+              </div>
+          </div>
+          <button type="button" onclick="removeThisBlock(event)" class="btn btn-danger col-xl-5 col-lg-5 col-md-5 col-sm-5 col-11 mt-2"><i class="fa fa-trash"></i> Remove Phone</button>
+        </div>
+        `
+        newPhoneForm.setAttribute('class', 'mb-2');
+        newPhoneForm.setAttribute('name', 'phone-form');
+        document.getElementById('phone-list').append(newPhoneForm);
+      }
+
+      function addAddressElement(addressInfo){
+        if(addressInfo == null)
+          addressInfo = {House_No:"", Street:"", City:"", Country:"", PinCode: ""};
+        let newAddressForm = document.createElement("form");
+        newAddressForm.innerHTML = `
+          <div class="row gutters justify-content-center">
+            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                <h6 class="mt-3 mb-2 text-primary">Address</h6>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label for="House_No">House No.</label>
+                    <input type="text" name="House_No" class="form-control" value="${addressInfo.House_No}" placeholder="Enter House No">
+                </div>
+            </div>
+            <div class="col-xl-6 col-lg-6 col-md-6 col-sm-6 col-12">
+                <div class="form-group">
+                    <label for="Street">Street</label>
+                    <input type="text" name="Street" class="form-control" value="${addressInfo.Street}" placeholder="Enter Street">
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+                <div class="form-group">
+                    <label for="City">City</label>
+                    <input type="text" name="City" class="form-control" value="${addressInfo.City}" placeholder="Enter City">
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+                <div class="form-group">
+                    <label for="Country">Country</label>
+                    <input type="text" name="Country" class="form-control" value="${addressInfo.Country}"" placeholder="Enter Country">
+                </div>
+            </div>
+            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4 col-12">
+                <div class="form-group">
+                    <label for="PinCode">PinCode</label>
+                    <input type="text" name="PinCode" class="form-control" value="${addressInfo.PinCode}"" placeholder="Pin Code">
+                </div>
+            </div>
+            <button type="button" onclick="removeThisBlock(event)" class="btn btn-danger col-11 mt-2"><i class="fa fa-trash"></i> Remove Address</button>
+          </div>
+        `
+        newAddressForm.setAttribute('class', 'mb-2');
+        newAddressForm.setAttribute('name', 'address-form');
+        document.getElementById('address-list').append(newAddressForm);
+      }
+
+      document.addEventListener("DOMContentLoaded", function(event) {
+        fetch("/api/user/get_info", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          }
+        })
+        .then(function (response) {
+          return response.json();
+        })
+        .then(function (data) {
+          data.message.Mobile_Number.forEach(element => {
+            addPhoneElement(element);
+          });
+          data.message.Address.forEach(element => {
+            addAddressElement(element);
+          });
+          document.getElementById('user_name').value = data.message.Name;
+          document.getElementById('email_id').value = data.message.Email_Id;
+          document.getElementsByName('display_name').forEach(element =>(element.innerText = data.message.Name));
+          document.getElementsByName('display_email_id').forEach(element =>(element.innerText = data.message.Email_Id));
+
+        }).catch(function (error) {
+          console.error(error);
+        })
+      });
+
+      function updateRoutine(event){
+        console.log(event);
+        let data = {
+          Email_Id: document.getElementById('email_id').value,
+          Name: document.getElementById('user_name').value,
+        }
+        if(document.getElementById('password').value != ''){
+          data.Password = document.getElementById('password').value
+        }
+        Address = []
+        Mobile_Number = []
+        document.getElementsByName('address-form').forEach( element => {
+          formdata = new FormData(element);
+          let addressJSON = {}
+          formdata.forEach((value, key) =>
+            {
+              addressJSON[key] = value;
+            }
+          )
+          Address.push(addressJSON);
+        });
+        document.getElementsByName('phone-form').forEach( element => {
+          formdata = new FormData(element);
+          let Mobile_NumberJSON = {}
+          formdata.forEach((value, key) =>
+            {
+              Mobile_NumberJSON[key] = value;
+            }
+          )
+          Mobile_Number.push(Mobile_NumberJSON);
+        });
+        data.Mobile_Number = Mobile_Number;
+        data.Address = Address;
+        console.log(data);
+        fetch("/api/user/update/",{
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body : JSON.stringify(data)
+        }).then(function(response) {
+          return response.json();
+        })
+        .then(function (response){
+          console.log(response)
+          if(response.message == "success")
+          {
+            next_url = "{{url_for('account')}}";
+            window.location.href = next_url;
+          }
+          else
+          {
+            alert(JSON.stringify(response));
+          }
+        })
+        .catch(function(error){
+          console.log(error);
+        })
+
+
+      }
+    </script>
+{% endblock content %}
