@@ -148,7 +148,6 @@
             return response.json();
           })
           .then(function (data) {
-            console.log(data);
             document.getElementById('username').innerText = data.message.Name
             document.getElementById('useremail').innerText = data.message.Email_Id
             createChild('Name', data.message.Name);

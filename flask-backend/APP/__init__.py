@@ -57,7 +57,7 @@ def register():
 def logout():
     session.pop('user', None)
     return redirect(url_for('login'))
-    
+
 
 @app.route('/account')
 @login_required
@@ -67,6 +67,13 @@ def account():
     # print(g.user)
     # we can access g in templates (check email field)
     return render_template("account.html")
+
+@app.route('/updateprofile')
+@login_required
+def updateprofile():
+    # g is lika a global data that exist for a single request
+    g.user = session.get('user')
+    return render_template("updateprofile.html", cssfile="css/updateprofile.css")
 
 @app.route("/map")
 def get_map():
