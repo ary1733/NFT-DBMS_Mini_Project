@@ -75,6 +75,11 @@ def updateprofile():
     g.user = session.get('user')
     return render_template("updateprofile.html", cssfile="css/updateprofile.css")
 
+@app.route("/additem")
+@login_required
+def additem():
+    return render_template("additem.html")
+
 @app.route("/map")
 def get_map():
     data={}

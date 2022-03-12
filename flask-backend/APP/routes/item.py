@@ -30,15 +30,17 @@ def get_item():
 
 # Create
 @item_bp.route("/add/", methods=["POST"])
+@api_session_required
 def add_item():
-    data = request.json
-    if(data.get('Email_Id') is None):
-        return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
+    data = dict(request.form)
+    data['Email_Id'] = session.get('user').get('email')
+    imageFiles = request.files.getlist("Image")
     
-    query_res = False
+    # return make_response(jsonify({"message":"ok"}))
+    query_res = True
     # Atleast Expect a name field
     if(data.get('Name') is not None):
-        query_res = query_commit_db(
+        query_res &= query_commit_db(
             """
             INSERT INTO Item (Name, Description, Email_Id) values
             (?, ?, ?)
@@ -46,7 +48,27 @@ def add_item():
             (data.get('Name'), data.get('Description'), data.get('Email_Id')),
             True
         )
-    return make_response(jsonify({"message": query_res}), 200)
+    ItemId = query_db(
+        """
+        select seq from sqlite_sequence where name=?;
+        """,
+        ("Item",),
+        True).get('seq')    
+    if(request.files['Image'].filename != ''):
+        prepareList = []
+        for file in imageFiles:
+            imgData = file.read()
+            prepareList.append((imgData, ItemId))
+        query_res &= query_commit_db('''
+        INSERT INTO Item_Image (Image, Item_Id) values
+        (?, ?)
+        ''',
+        prepareList
+        )
+    else:
+        print("No files")
+    return make_response(jsonify({"message": "success" if query_res else "failure"}), 200)
+
 
 # Delete
 @item_bp.route("/delete/", methods=["POST"])
