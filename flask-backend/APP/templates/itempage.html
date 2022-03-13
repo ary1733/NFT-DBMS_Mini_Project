@@ -1,0 +1,81 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 text-center mx-auto">
+      <h3>
+        {{ g.item.ItemName }}
+      </h3>
+      <input type="hidden" id="itemid" value="{{ g.item.Item_Id }}" hidden>
+    </div>
+  </div>
+  <div class="row" style="margin-top:20px; margin-bottom:20px;">
+    {% if g.images|length > 0 %}
+    <div id="carouselExampleIndicators" class="carousel slide w-50 mx-auto" data-bs-ride="carousel">
+      <div class="carousel-indicators">
+        {% for iteration in range(g.images|length) %} <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{iteration}}" class="active" aria-current="true" aria-label="Slide {{iteration + 1}}"></button> {% endfor %}
+      </div>
+      <div class="carousel-inner">
+        {% for imgid in g.images %} {% if imgid == g.images|first %}
+        <div class="carousel-item active">
+          <img src="/api/item/image/{{imgid}}" class="d-block w-100 img-fluid" alt="...">
+        </div>
+        {% else %}
+        <div class="carousel-item">
+          <img src="/api/item/image/{{imgid}}" class="d-block w-100 img-fluid" alt="...">
+        </div>
+        {% endif %} {% endfor %}
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+    </div>
+    {% else %}
+    <h3 class="text-center">No Images</h3>
+    {% endif %}
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h4>Owner</h4>
+      <p>Name : {{g.item.UserName}}(May be a link)</p>
+      <p>Email Id: {{g.item.Email_Id}}</p>
+    </div>
+    <div class="col-md-6">
+      <h4>Description</h4>
+      {% if g.item.Average_Rating %}
+      <p class="font-weight-light">Average Rating <b>{{ g.item.Average_Rating|round(1, 'floor')}} / 5</b></p>
+      {% endif %}
+      <p>{{g.item.Description}}</p>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-3 p-2">
+      <button type="button" class="btn btn-primary w-100">
+        Sample1
+      </button>
+    </div>
+    <div class="col-md-3 p-2">
+      <button type="button" class="btn btn-primary w-100">
+        Sample2
+      </button>
+    </div>
+    <div class="col-md-3 p-2">
+      <button type="button" class="btn btn-primary w-100">
+        Sample3
+      </button>
+    </div>
+    <div class="col-md-3 p-2">
+      <button type="button" class="btn btn-primary w-100">
+        Sample4
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    {% include 'review.html' %}
+  </div>
+</div>
+{% endblock content %}
