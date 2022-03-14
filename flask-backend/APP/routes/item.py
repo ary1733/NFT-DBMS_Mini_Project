@@ -140,25 +140,26 @@ def search_item():
     )
     return make_response(jsonify({"message": query_res}), 200)
 
+@item_bp.route("/addbid/", methods=["POST"])
+@api_session_required
 def bid():
     data = request.json
+    data['Email_Id'] = session.get('user').get('email')
      # ! CHECKS
-    if(data.get('Advert_Id') is None):
+    if(data.get('AdvertisementId') is None):
         return make_response(jsonify({"message": "Not a Valid Advert Id"}), 200)
-    if(data.get('Email_Id') is None):
-        return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
     if(data.get('Cost') is None):
         return make_response(jsonify({"message": "Not a Valid Cost"}), 200)
     
     query_res = query_commit_db(
         """
-        INSERT INTO Bid (Advert_Id, Email_Id, Cost) values
-        (?, ?, ?)
+        INSERT INTO Bid (AdvertisementId, Bidder_Id, Cost, Date) values
+        (?, ?, ?, ?)
         """,
-        (data.get('Advert_Id'), data.get('Email_Id'), data.get('Cost')),
+        (data.get('AdvertisementId'), data.get('Email_Id'), data.get('Cost'), datetime.datetime.now()),
         True
     )
-    return make_response(jsonify({"message": query_res}), 200)
+    return make_response(jsonify({"message": "success" if query_res else "failure"}), 200)
 
 @item_bp.route('/add_advert', methods=["POST"])        
 def add_advert():
@@ -225,7 +226,6 @@ def write_review():
 # @api_session_required
 def get_review():
     data = request.json
-    print(data)
     if(data.get('Item_Id') is None):
         return make_response(jsonify({"message": "Not a Valid Item Id"}), 200)
     query_res = query_db(
@@ -234,7 +234,6 @@ def get_review():
         """,
         (data.get('Item_Id'),)
     )
-    print(query_res)
     return make_response(jsonify({"message": "success", "reviews":query_res}), 200)
 
 @item_bp.route("/sell/", methods=["POST"])
