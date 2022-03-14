@@ -47,8 +47,9 @@
     <div class="col-md-6">
       <h4>Description</h4>
       {% if g.item.Average_Rating %}
-      <p class="font-weight-light">Average Rating <b>{{ g.item.Average_Rating|round(1, 'floor')}} / 5</b></p>
+      <p class="font-weight-light">Average Rating <b>{{ g.item.Average_Rating|round(1, 'ceil')}} / 5</b></p>
       {% endif %}
+      <p class="text-danger"><i class="fa fa-solid fa-heart"></i> Wishlisted by <b>{{ g.wishlistCnt}} user(s)</b></p>
       <p>{{g.item.Description}}</p>
     </div>
   </div>
@@ -81,6 +82,16 @@
       </button>
     </div>
     {% endif %}
+    <div class="col-md-3 p-2">
+      {% if g.isWishlist %}
+      <button type="button" class="btn btn btn-danger w-100" onclick="toggleWishList(event)">
+        <i class="fa fa-solid fa-heart"></i>Wishlisted
+      {% else %}
+      <button type="button" class="btn btn btn-outline-danger w-100" onclick="toggleWishList(event)">
+
+      <i class="fa fa-solid fa-heart"></i>Wishlist {% endif %}
+      </button>
+    </div>
   </div>
   <div class="row">
     {% if g.bids|length > 0 %}
@@ -122,4 +133,31 @@
     {% include 'review.html' %}
   </div>
 </div>
+<script>
+  function toggleWishList(event) {
+    console.log(event);
+    let dataJson = {
+      'Item_Id': document.getElementById('itemid').value,
+    }
+    fetch('/api/item/toggleWishlist/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(dataJson)
+    }).then(function(response) {
+      return response.json();
+    }).then(function(response) {
+      console.log(response);
+      if (response.message == "success") {
+        location = location;
+      } else {
+        // add login check
+        alert(JSON.stringify(response));
+      }
+    }).catch(function(error) {
+      console.log(error);
+    })
+  }
+</script>
 {% endblock content %}

@@ -126,6 +126,13 @@ def viewitem(itemid):
         ''',
         (itemid,)
     )
+    wishlistRes = query_db('SELECT COUNT(*) AS wishlistcnt FROM WISHLIST WHERE ITEM_Id = ?', (itemid,), True)
+    g.isWishlist = False
+    if(session.get('user') is not None):
+        print("logged in")
+        isWishListRes = query_db('SELECT COUNT(*) AS wishlistcnt FROM WISHLIST WHERE ITEM_Id = ? AND Email_Id = ? ', (itemid,session.get('user').get('email'),), True)
+        g.isWishlist = (isWishListRes.get('wishlistcnt') > 0)
+    g.wishlistCnt = wishlistRes.get('wishlistcnt')
     g.item = query_res
     g.images = [img['ImageId'] for img in image_res]
     g.bids = bid_res

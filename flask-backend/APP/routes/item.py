@@ -343,3 +343,22 @@ def get_history():
         (data.get('Item_Id'), )
     )
     return make_response(jsonify({"message": query_res}), 200)
+
+@item_bp.route('/toggleWishlist/', methods=['POST'])
+@api_session_required
+def toggleWishlist():
+    data = request.json
+    data['Email_Id'] = session.get('user').get('email')
+    print(data)
+    if(data.get('Item_Id') is None):
+        return make_response(jsonify({"message": "Not a Valid Item Id"}), 200)
+
+    isWishListRes = query_db('SELECT COUNT(*) AS wishlistcnt FROM WISHLIST WHERE ITEM_Id = ? AND Email_Id = ? ', (data.get('Item_Id'),data.get('Email_Id'),), True)
+    if (isWishListRes.get('wishlistcnt') > 0):
+        query_res = query_commit_db('DELETE FROM WISHLIST WHERE ITEM_Id = ? AND Email_Id = ?', (data.get('Item_Id'),data.get('Email_Id'),), True)
+        wishlist = False
+    else:
+        query_res = query_commit_db('INSERT INTO WISHLIST (Item_Id, Email_Id) Values(?, ?);', (data.get('Item_Id'),data.get('Email_Id'),), True)
+        wishlist = True
+    return make_response(jsonify({"message":  "success" if query_res else "failure", "state": wishlist}), 200)
+    
