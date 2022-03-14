@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="card col-md-10 m-2">
+      <div class="card-body container">
+        <div class="row justify-content-center">
+          <h4 class="col-md-5 card-title text-center">
+            Add New Item
+          </h4>  
+        </div>
+        <form id="add-item-form">
+          <div class="row justify-content-center">
+            <div class="col-md-4 mb-3">
+              <label for="Name" class="form-label">Item Name</label>
+              <input type="text" class="form-control" name="Name" id="Name" placeholder="Enter Item Name">
+            </div>
+            <div class="col-md-4 mb-3">
+              <label for="Description" class="form-label">Item Description</label>
+              <textarea class="form-control" name="Description" id="Description"></textarea>
+            </div>
+            <div class="col-md-6 mb-3">
+              <label for="Image">Select Images:</label>
+              <input type="file" id="Image" name="Image"accept="image/*" multiple>
+            </div>
+            <button type="button" onclick="addItem()" class="btn btn-primary block">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function addItem ()
+  {
+    let itemFormData = new FormData(document.getElementById("add-item-form"));
+    console.log(...itemFormData);
+    fetch('/api/item/add/',{
+      method: 'POST',
+      body: itemFormData
+    }).then(function(response){
+      return response.json();
+    }).then(function(response){
+      console.log(response);
+      if(response.message == "success")
+      {
+        alert('Item added successfully');
+        // may redirect to items page
+      }
+      else {
+        alert('Add item failed');
+      }
+    }).catch(function (error){
+      console.log(error);
+    })
+  }
+  
+</script>
+
+{% endblock content %}

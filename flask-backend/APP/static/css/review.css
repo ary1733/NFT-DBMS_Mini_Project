@@ -1,0 +1,32 @@
+.animated {
+  -webkit-transition: height 0.2s;
+  -moz-transition: height 0.2s;
+  transition: height 0.2s;
+}
+
+.review-star-selected {
+  color: #ff9100;
+}
+
+.review-star-not-selected {
+  color: #838383;
+}
+
+.rating-css div {
+  color: #ff9100;
+  font-family: sans-serif;
+  text-transform: uppercase;
+}
+
+.rating-css input {
+  display: none;
+}
+
+.rating-css input:checked+label~label {
+  color: #838383;
+}
+
+.rating-css label:active {
+  transform: scale(0.8);
+  transition: 0.3s ease;
+}

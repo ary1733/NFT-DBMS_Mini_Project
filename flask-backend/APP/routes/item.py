@@ -1,7 +1,8 @@
 import datetime
+import io
 
 # Item Base Structure
-from flask import Blueprint, make_response, request, jsonify, session
+from flask import Blueprint, make_response, request, jsonify, session, send_from_directory, send_file
 from APP.utils import query_db, query_commit_db, api_session_required
 
 item_bp = Blueprint('item', __name__)
@@ -28,17 +29,27 @@ def get_item():
             )
     return response
 
+@item_bp.route("/image/<imageid>")
+def get_image(imageid):
+    img_res = query_db('select * from Item_Image WHERE ImageId = ?;', (imageid, ), True)
+    if(img_res is None):
+        return send_from_directory('static',path='images/no-image.jpg', mimetype='image/jpg')
+    imageData = img_res['Image']
+
+    return send_file(io.BytesIO(imageData), mimetype='image', as_attachment=False)
 # Create
 @item_bp.route("/add/", methods=["POST"])
+@api_session_required
 def add_item():
-    data = request.json
-    if(data.get('Email_Id') is None):
-        return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
+    data = dict(request.form)
+    data['Email_Id'] = session.get('user').get('email')
+    imageFiles = request.files.getlist("Image")
     
-    query_res = False
+    # return make_response(jsonify({"message":"ok"}))
+    query_res = True
     # Atleast Expect a name field
     if(data.get('Name') is not None):
-        query_res = query_commit_db(
+        query_res &= query_commit_db(
             """
             INSERT INTO Item (Name, Description, Email_Id) values
             (?, ?, ?)
@@ -46,7 +57,27 @@ def add_item():
             (data.get('Name'), data.get('Description'), data.get('Email_Id')),
             True
         )
-    return make_response(jsonify({"message": query_res}), 200)
+    ItemId = query_db(
+        """
+        select seq from sqlite_sequence where name=?;
+        """,
+        ("Item",),
+        True).get('seq')    
+    if(request.files['Image'].filename != ''):
+        prepareList = []
+        for file in imageFiles:
+            imgData = file.read()
+            prepareList.append((imgData, ItemId))
+        query_res &= query_commit_db('''
+        INSERT INTO Item_Image (Image, Item_Id) values
+        (?, ?)
+        ''',
+        prepareList
+        )
+    else:
+        print("No files")
+    return make_response(jsonify({"message": "success" if query_res else "failure"}), 200)
+
 
 # Delete
 @item_bp.route("/delete/", methods=["POST"])
@@ -166,9 +197,10 @@ def add_advert():
 
 # Harshit
 @item_bp.route("/write_review", methods=["POST"])
-# @api_session_required
+@api_session_required
 def write_review():
     data = request.json
+    data['Email_Id'] = session.get('user').get('email')
     if(data.get('Email_Id') is None):
         return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
     if(data.get('Item_Id') is None):
@@ -177,29 +209,33 @@ def write_review():
         return make_response(jsonify({"message": "Not a Valid Review"}), 200)
     if(data.get('Rating') is None):
         return make_response(jsonify({"message": "Not a Valid Rating"}), 200)
+    
+    data['Date'] = datetime.datetime.now()
     query_res = query_commit_db(
         """
         INSERT INTO Reviews (Email_Id, Item_Id, Review, Rating, Date) values
         (?, ?, ?, ?, ?)
         """,
-        (data.get('Email_Id'), data.get('Item_Id'), data.get('Review'), data.get('Rating'), datetime.datetime.now()),
+        (data.get('Email_Id'), data.get('Item_Id'), data.get('Review'), data.get('Rating'), data.get('Date')),
         True
     )
-    return make_response(jsonify({"message": query_res}), 200)
+    return make_response(jsonify({"message":  "success" if query_res else "failure", 'review':data}), 200)
 # Fetch can't request get with body, hence we need to use post
 @item_bp.route("/get_review", methods=["POST"])
 # @api_session_required
 def get_review():
     data = request.json
+    print(data)
     if(data.get('Item_Id') is None):
         return make_response(jsonify({"message": "Not a Valid Item Id"}), 200)
     query_res = query_db(
         """
-        SELECT * FROM Reviews WHERE Item_Id = ?;
+        SELECT * FROM Reviews NATURAL JOIN User WHERE Item_Id = ?;
         """,
         (data.get('Item_Id'),)
     )
-    return make_response(jsonify({"message": query_res}), 200)
+    print(query_res)
+    return make_response(jsonify({"message": "success", "reviews":query_res}), 200)
 
 @item_bp.route("/sell/", methods=["POST"])
 def sell_item():

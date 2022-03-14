@@ -1,6 +1,7 @@
 from flask import Flask, redirect, url_for, g, render_template, session
 from .routes import base_bp
 from APP.utils import query_db, get_db, SCHEMA, login_required
+from APP.routes.item import get_item
 import os
 
 # from flask_cors import CORS
@@ -74,6 +75,42 @@ def updateprofile():
     # g is lika a global data that exist for a single request
     g.user = session.get('user')
     return render_template("updateprofile.html", cssfile="css/updateprofile.css")
+
+@app.route("/additem")
+@login_required
+def additem():
+    return render_template("additem.html")
+
+@app.route("/item/<itemid>")
+def viewitem(itemid):
+    print(itemid)
+    query_res = query_db(
+        '''
+        SELECT 
+        I.Name as ItemName, Description, I.Item_Id, U.Email_Id, U.Name as UserName, avg(Rating) as Average_Rating 
+        FROM 
+        Item as I 
+        Join User as U 
+        on I.Email_Id = U.Email_Id 
+        LEFT Join Reviews 
+        on I.Item_Id = Reviews.Item_Id
+        where I.Item_Id =?
+        GROUP BY I.Name , Description, I.Item_Id, U.Email_Id, U.Name''',
+        (itemid,),
+        True
+    )
+    image_res = query_db(
+        'SELECT ImageId from Item_Image where Item_Id = ?;',
+        (itemid,),
+    )
+    g.item = query_res
+    g.images = [img['ImageId'] for img in image_res]
+    print(g.item, g.images)
+    if(g.item is None):
+        return redirect(url_for('account'))
+
+    return render_template("itempage.html")
+
 
 @app.route("/map")
 def get_map():
