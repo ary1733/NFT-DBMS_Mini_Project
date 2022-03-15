@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for, g, render_template, session
 from .routes import base_bp
 from APP.utils import query_db, get_db, SCHEMA, login_required
-from APP.routes.item import get_item
+from APP.routes.item import get_item,search_item_query
 import os
 import datetime
 
@@ -52,6 +52,24 @@ def index():
     #     print(user)
     # return query_db('select * from user')
     # return "Hi"
+    print(search_item_query("%"))
+    response = search_item_query("%")
+    g.items = response
+    items = []
+    # print(g.items)
+    for item in g.items:
+        print(item.get("Item_Id"))
+        image_res = query_db(
+            'SELECT ImageId from Item_Image where Item_Id = ?;',
+            (item.get("Item_Id"),),False
+        )
+        print(image_res)
+        if len(image_res) > 0:
+            items.append(item)
+            items[-1]['ImageId'] = image_res[0]['ImageId']
+        
+        g.items = items
+        # g.images.append(image_res['ImageId'])
     return render_template("index.html",cssfile="css/index.css")
 
 @app.route('/login')

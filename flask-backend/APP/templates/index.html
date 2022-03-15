@@ -8,49 +8,19 @@
         <p class="t3">Club</p>
     </div>
     <div class="trending">
-        <h1>Join the club!</h1>
+      <h1>Join the club!</h1>
     </div>
-    <div class="trending cards-container row row-cols-1 row-cols-md-3 g-5">
+    <div class="trending cards-container row row-cols-1 row-cols-md-3 g-4">
+      {% for item in g.items %}
         <div class="col">
-          <div class="card c1 rounded-3" >
-            <img src="..." class="card-img-top" alt="Image">
+          <div class="card rounded-3" >
+            <img src= "/api/item/image/{{item.ImageId}}" class="card-img-top img-fluid ratio ratio-1x1" alt="Image">
             <div class="card-body">
-              <h5 class="card-title">Rolling Stone</h5>
+              <h5 class="card-title">{{item.Name}}</h5>
             </div>
           </div>
         </div>
-        <div class="col">
-          <div class="card c2 rounded-3">
-            <img src="..." class="card-img-top" alt="Image">
-            <div class="card-body">
-              <h5 class="card-title">Any Ot</h5>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card c3 rounded-3">
-            <img src="..." class="card-img-top" alt="Image">
-            <div class="card-body">
-              <h5 class="card-title">#6391</h5>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="card c4 rounded-3">
-            <img src="..." class="card-img-top" alt="Image">
-            <div class="card-body">
-              <h5 class="card-title">Eminem</h5>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-            <div class="card c5 rounded-3">
-              <img src="..." class="card-img-top" alt="Image">
-              <div class="card-body">
-                <h5 class="card-title">#5764</h5>
-              </div>
-            </div>
-        </div>
+      {% endfor %}
       </div>
 </div>
 {% endblock %}

@@ -123,22 +123,44 @@ def update_item():
     return make_response(jsonify({"message": query_res}), 200)
 
 #* Bhushan
-def search_item():
+@item_bp.route("/search", methods=["GET"])
+def search_item(searchTerm = None):
     data = request.json
-    searchTerm = data.get('SearchTerm')
+    if searchTerm is None:
+        searchTerm = data.get('SearchTerm')
     # ! CHECKS
     if(searchTerm is None):
         return make_response(jsonify({"message": "Not a Valid Search Term"}), 200)
     
     query_res = query_db(
         """
-        GET Item 
-        WHERE Name LIKE ?
+        SELECT Item_Id, Name, Description, Email_Id 
+        FROM Item
+        WHERE Item.Name LIKE ?
         """,
-        (searchTerm, ),
-        True
+        (searchTerm, ),False
     )
+    # print("Query Response = ", query_res)
     return make_response(jsonify({"message": query_res}), 200)
+
+def search_item_query(searchTerm = None):
+    data = request.json
+    if searchTerm is None:
+        searchTerm = data.get('SearchTerm')
+    # ! CHECKS
+    if(searchTerm is None):
+        return make_response(jsonify({"message": "Not a Valid Search Term"}), 200)
+    
+    query_res = query_db(
+        """
+        SELECT Item_Id, Name, Description, Email_Id 
+        FROM Item
+        WHERE Item.Name LIKE ?
+        """,
+        (searchTerm, ),False
+    )
+    # print("Query Response = ", query_res)
+    return query_res
 
 @item_bp.route("/addbid/", methods=["POST"])
 @api_session_required
