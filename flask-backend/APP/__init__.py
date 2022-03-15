@@ -126,17 +126,30 @@ def viewitem(itemid):
         ''',
         (itemid,)
     )
+    transactons_res = query_db('''
+    SELECT Transactions.*, Buyer.Name as BuyerName, Seller.Name as SellerName 
+    FROM Transactions 
+    JOIN User As Buyer 
+    ON Transactions.BuyerEmail_Id = Buyer.Email_Id 
+    JOIN User As Seller 
+    ON Transactions.SellerEmail_Id = Seller.Email_ID
+    WHERE Item_Id = ?
+    ORDER BY Transactions.Date DESC;
+    ''',(itemid,))
     wishlistRes = query_db('SELECT COUNT(*) AS wishlistcnt FROM WISHLIST WHERE ITEM_Id = ?', (itemid,), True)
     g.isWishlist = False
+    g.canSell = False
     if(session.get('user') is not None):
-        print("logged in")
         isWishListRes = query_db('SELECT COUNT(*) AS wishlistcnt FROM WISHLIST WHERE ITEM_Id = ? AND Email_Id = ? ', (itemid,session.get('user').get('email'),), True)
         g.isWishlist = (isWishListRes.get('wishlistcnt') > 0)
+        g.canSell = (query_res.get('Email_Id') == session.get('user').get('email') and len(bid_res)>0)
+    print(g.canSell)
     g.wishlistCnt = wishlistRes.get('wishlistcnt')
     g.item = query_res
     g.images = [img['ImageId'] for img in image_res]
     g.bids = bid_res
-    print(g.item, g.images)
+    g.transactions = transactons_res
+    
     if(g.item is None):
         return redirect(url_for('account'))
 

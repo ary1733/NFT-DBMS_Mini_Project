@@ -81,7 +81,20 @@
         Place a bid
       </button>
     </div>
+    {% endif %} {% if g.transactions|length > 0 %}
+    <div class="col-md-3 p-2">
+      <button type="button" class="btn btn-primary w-100" data-bs-toggle="collapse" data-bs-target="#show-transactions" aria-expanded="false" aria-controls="show-transactions">
+        Show Transactions
+      </button>
+    </div>
+    {% endif %} {% if g.canSell %}
+    <div class="col-md-3 p-2">
+      <button type="button" class="btn btn-primary w-100" onclick="handleSell(event)">
+        Sell
+      </button>
+    </div>
     {% endif %}
+
     <div class="col-md-3 p-2">
       {% if g.isWishlist %}
       <button type="button" class="btn btn btn-danger w-100" onclick="toggleWishList(event)">
@@ -127,7 +140,39 @@
         {% include 'addbid.html' %}
       </div>
     </div>
+    {% endif %} {% if g.transactions|length > 0 %}
+    <div class="col-12">
+      <div class="collapse" id="show-transactions">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Transaction Id</th>
+              <th scope="col">Buyer Name</th>
+              <th scope="col">Buyer Id</th>
+              <th scope="col">Seller Name</th>
+              <th scope="col">Seller Id</th>
+              <th scope="col">Date Of Transaction</th>
+              <th scope="col">Transaction Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for transaction in g.transactions %}
+            <tr>
+              <th scope="row">{{transaction.Transaction_ID}}</th>
+              <td>{{transaction.BuyerName}}</td>
+              <td>{{transaction.BuyerEmail_Id}}</td>
+              <td>{{transaction.SellerName}}</td>
+              <td>{{transaction.SellerEmail_Id}}</td>
+              <td>{{transaction.Date|formatdatetime}}</td>
+              <td>{{transaction.Cost}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
     {% endif %}
+
   </div>
   <div class="row">
     {% include 'review.html' %}
@@ -158,6 +203,30 @@
     }).catch(function(error) {
       console.log(error);
     })
+  }
+
+  function handleSell(event) {
+    if (confirm('Are you sure you want to Sell the item?')) {
+      fetch('/api/item/sell/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          AdvertisementId: document.getElementById('AdvertisementId').value,
+          Item_Id: document.getElementById('itemid').value,
+        })
+      }).then(function(response) {
+        return response.json();
+      }).then(function(response) {
+        if (response.message == "success") {
+          alert('Transaction Completed');
+          location = location;
+        } else {
+          alert(JSON.stringify(response))
+        }
+      })
+    }
   }
 </script>
 {% endblock content %}

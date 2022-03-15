@@ -237,14 +237,17 @@ def get_review():
     return make_response(jsonify({"message": "success", "reviews":query_res}), 200)
 
 @item_bp.route("/sell/", methods=["POST"])
+@api_session_required
 def sell_item():
     data = request.json
-    email_id = data.get('Email_Id')
+    data['Email_Id'] = session.get('user').get('email')
     advert_id = data.get('AdvertisementId')
 
     # ! CHECKS
-    if(email_id is None):
+    if(data.get('Email_Id') is None):
         return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
+    if(data.get('Item_Id') is None):
+        return make_response(jsonify({"message": "Not a Valid Item Id"}), 200)
     if(advert_id is None):
         return make_response(jsonify({"message": "Not a Valid Advertisement Id"}), 200)
     
@@ -266,6 +269,35 @@ def sell_item():
     # ! Should be checked while creating the advertisement
     if(advert.get("cnt") > 1):
         return make_response(jsonify({"message": "Advertisement is not unique"}), 200)
+    
+    item_cnt = query_db("SELECT COUNT(*) AS cnt FROM Item WHERE Item_Id = ? AND Email_Id = ?", (data.get('Item_Id'), data.get('Email_Id')), True)
+
+    if(item_cnt.get('cnt') == 0):
+        return make_response(jsonify({"message": "Item ownership verification failed"}), 200)
+
+    
+
+    highest_bid = query_db(
+        """
+        SELECT Bid.*, SaleAdvertisement.Item_Id
+        FROM 
+        Item 
+        JOIN SaleAdvertisement ON Item.Item_Id = SaleAdvertisement.Item_Id
+        JOIN Bid ON Bid.AdvertisementId = SaleAdvertisement.AdvertisementId 
+        WHERE SaleAdvertisement.AdvertisementId = ?
+        ORDER BY Bid.Cost DESC
+        LIMIT 1;
+        """,
+        (advert_id,),
+        True
+    )
+
+    if(int(highest_bid.get('Item_Id')) != int(data.get('Item_Id'))):
+        print(highest_bid.get('Item_Id'), data.get('Item_Id'))
+        return make_response(jsonify({"message": "Advert and item not matching"}), 200)
+
+    if(highest_bid is None):
+        return make_response(jsonify({"message": "No bids found"}), 200)
 
     query_res = query_commit_db(
         """
@@ -278,25 +310,6 @@ def sell_item():
         True
     )
 
-    highest_bid = query_db(
-        """
-        SELECT Cost as cost, Bidder_Id as eid FROM Bid WHERE AdvertisementId = ?
-        ORDER BY Cost DESC LIMIT 1
-        """,
-        (advert_id,),
-    )
-
-    highest_bid = highest_bid[0]
-
-    item = query_db(
-        """
-        SELECT Item_Id as iid FROM SaleAdvertisement WHERE AdvertisementId = ?
-        """,
-        (advert_id,),
-    )
-
-    item = item[0]
-
     query_res &= query_commit_db(
         """
         UPDATE Item
@@ -305,7 +318,7 @@ def sell_item():
         WHERE
         Item_Id = ?
         """,
-        (highest_bid.get('eid'), item.get('iid')),
+        (highest_bid.get('Bidder_Id'), highest_bid.get('Item_Id')),
         True
     )
 
@@ -314,11 +327,11 @@ def sell_item():
         INSERT INTO Transactions (Cost, Date, Item_Id, BuyerEmail_Id, SellerEmail_Id) values
         (?, ?, ?, ?, ?);
         """,
-        (highest_bid.get('cost'), datetime.datetime.now(), item.get('iid'), email_id, highest_bid.get('eid'),),
+        (highest_bid.get('Cost'), datetime.datetime.now(), highest_bid.get('Item_Id'), highest_bid.get('Bidder_Id'), data.get('Email_Id'),),
         True
     )
 
-    return make_response(jsonify({"message": query_res}), 200)
+    return make_response(jsonify({"message": "success" if query_res else "failure"}), 200)
 
 def get_history():
     data = request.json
