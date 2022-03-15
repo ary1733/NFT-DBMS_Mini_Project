@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="card col-md-10 m-2">
+      <div class="card-body container">
+        <div class="row justify-content-center">
+          <h4 class="col-md-5 card-title text-center">
+            Add New Advertisement
+          </h4>  
+        </div>
+        <form id="add-advert-form">
+          <div class="row justify-content-center">
+            <div class="col-md-4 mb-3">
+              <label for="Name" class="form-label">Starting Bid</label>
+              <input type="text" class="form-control" name="Name" id="Name" placeholder="Enter Cost">
+            </div>
+            <button type="button" onclick="addAdvert()" class="btn btn-primary block">Add Advertisement</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  function addAdvert ()
+  {
+    let advertFormData = new FormData(document.getElementById("add-advert-form"));
+    var object = {}
+    advertFormData.forEach(function(value, key) {
+      object[key] = value;
+    });
+    object.Item_Id = document.getElementById('itemid').value;
+    console.log(...advertFormData);
+    fetch('/api/item/add_advert',{
+      method: 'POST',
+      body: JSON.stringify(object)
+    }).then(function(response){
+      return response.json();
+    }).then(function(response){
+      console.log(response);
+      if(response.message == "success")
+      {
+        alert('Advertisement added successfully');
+        // may redirect to items page
+      }
+      else {
+        alert('Advertisement addition failed');
+      }
+    }).catch(function (error){
+      console.log(error);
+    })
+  }
+  
+</script>
+
+{% endblock content %}

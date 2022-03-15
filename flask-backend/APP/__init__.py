@@ -10,7 +10,9 @@ import os
 app = Flask(__name__)
 
 # For Session
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+# app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SESSION_TYPE'] = 'memcached'
+app.config['SECRET_KEY'] = 'super secret key'
 # Maybe required in future
 # cors = CORS(app)
 app.register_blueprint(base_bp, url_prefix="/api")
@@ -80,6 +82,11 @@ def updateprofile():
 @login_required
 def additem():
     return render_template("additem.html")
+
+@app.route("/addadvert")
+@login_required
+def addadvert():
+    return render_template("addadvert.html")
 
 @app.route("/item/<itemid>")
 def viewitem(itemid):

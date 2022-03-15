@@ -160,9 +160,12 @@ def bid():
     )
     return make_response(jsonify({"message": query_res}), 200)
 
-@item_bp.route('/add_advert', methods=["POST"])        
+@item_bp.route('/add_advert', methods=["POST"])   
+@api_session_required     
 def add_advert():
-    data = request.json
+    data = dict(request.form)
+    data['Email_Id'] = session.get('user').get('email')
+    # data = request.json
     # ! CHECKS
     if(data.get('Email_Id') is None):
         return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
@@ -170,6 +173,31 @@ def add_advert():
         return make_response(jsonify({"message": "Not a Valid Item Id"}), 200)
     if(data.get('Cost') is None):
         return make_response(jsonify({"message": "Not a Valid Cost"}), 200)
+
+    owner = query_db(
+        """
+        SELECT Email_Id as eid FROM Item WHERE Item_Id = ?
+        """,
+        (data.get('Item_Id'), ),
+        True
+    )
+
+    if owner.get("eid") != data.get('Email_Id'):
+        return make_response(jsonify({"message": "Not a Valid Owner"}), 200)
+
+    advert = query_db(
+        """
+        SELECT count(*) as cnt FROM SaleAdvertisement 
+        WHERE Item_Id = ?
+        and
+        End_Date is not NULL;
+        """,
+        (data.get('Item_Id'),),
+        True
+    )
+
+    if(advert.get('cnt') > 0):
+        return make_response(jsonify({"message": "Already has an active advertisement"}), 200)
 
     query_res = query_commit_db(
         """
@@ -193,7 +221,7 @@ def add_advert():
         True
     )
 
-    return make_response(jsonify({"message": query_res}), 200)
+    return make_response(jsonify({"message": "success" if query_res else "failure"}), 200)
 
 # Harshit
 @item_bp.route("/write_review", methods=["POST"])
