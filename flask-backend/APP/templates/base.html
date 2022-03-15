@@ -16,20 +16,6 @@
 </head>
 
 <body>
-  
-    {%if request.endpoint == "index" %}
-    <style>
-        .main-container {
-        size: auto;
-        background-image: no-repeat;
-        background-repeat: no-repeat;
-        background-image: url("../static/images/top-image-1.png"), linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 1));
-        background-size: 100%;
-        background-position: top;
-        }
-    </style>
-    {%endif%}
-
   <div class="main-container w-100 ">
     <!-- Navbar -->
     {% include 'navbar.html' %} 

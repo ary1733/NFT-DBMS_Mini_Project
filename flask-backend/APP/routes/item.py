@@ -143,22 +143,40 @@ def search_item(searchTerm = None):
     # print("Query Response = ", query_res)
     return make_response(jsonify({"message": query_res}), 200)
 
-def search_item_query(searchTerm = None):
+def search_item_query(searchTerm = None, queryInfo = None):
     data = request.json
     if searchTerm is None:
         searchTerm = data.get('SearchTerm')
     # ! CHECKS
     if(searchTerm is None):
         return make_response(jsonify({"message": "Not a Valid Search Term"}), 200)
-    
-    query_res = query_db(
-        """
-        SELECT Item_Id, Name, Description, Email_Id 
-        FROM Item
-        WHERE Item.Name LIKE ?
-        """,
-        (searchTerm, ),False
-    )
+    if(queryInfo is None):
+        query_res = query_db(
+            """
+            SELECT Item_Id, Name, Description, Email_Id 
+            FROM Item
+            WHERE Item.Name LIKE ?
+            """,
+            ('%'+searchTerm+'%', ),False
+        )
+    elif(queryInfo == "mynfts"):
+        query_res = query_db(
+            """
+            SELECT Item_Id, Name, Description, Email_Id 
+            FROM Item
+            WHERE Email_Id = ?
+            """,
+            (session.get('user').get('email'), ),False
+        )
+    elif(queryInfo == "wishlist"):
+        query_res = query_db(
+            """
+            SELECT DISTINCT Item.* 
+            FROM Item JOIN Wishlist ON Item.Item_Id = Wishlist.Item_Id  
+            WHERE Wishlist.Email_Id = ?
+            """,
+            (session.get('user').get('email'), ),False
+        )
     # print("Query Response = ", query_res)
     return query_res
 

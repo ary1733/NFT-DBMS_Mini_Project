@@ -1,7 +1,7 @@
-from flask import Flask, redirect, url_for, g, render_template, session
+from flask import Flask, redirect, url_for, g, render_template, session, request
 from .routes import base_bp
 from APP.utils import query_db, get_db, SCHEMA, login_required
-from APP.routes.item import get_item,search_item_query
+from APP.routes.item import search_item_query
 import os
 import datetime
 
@@ -11,9 +11,9 @@ import datetime
 app = Flask(__name__)
 
 # For Session
-# app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 app.config['SESSION_TYPE'] = 'memcached'
-app.config['SECRET_KEY'] = 'super secret key'
+# app.config['SECRET_KEY'] = 'super secret key'
 # Maybe required in future
 # cors = CORS(app)
 
@@ -46,24 +46,23 @@ def favicon():
     return app.send_static_file('favicon.ico')
 
 @app.route('/')
-def index():
+def index(queryInfo = None):
     # cur = get_db().cursor()
     # for user in query_db('select * from user'):
     #     print(user)
     # return query_db('select * from user')
     # return "Hi"
-    print(search_item_query("%"))
-    response = search_item_query("%")
+    print(queryInfo)
+    search_query = request.args.get('searchinput') if request.args.get('searchinput') is not None else ""
+    response = search_item_query(search_query, queryInfo)
+    print(response)
     g.items = response
     items = []
-    # print(g.items)
     for item in g.items:
-        print(item.get("Item_Id"))
         image_res = query_db(
             'SELECT ImageId from Item_Image where Item_Id = ?;',
             (item.get("Item_Id"),),False
         )
-        print(image_res)
         if len(image_res) > 0:
             items.append(item)
             items[-1]['ImageId'] = image_res[0]['ImageId']
@@ -71,6 +70,13 @@ def index():
         g.items = items
         # g.images.append(image_res['ImageId'])
     return render_template("index.html",cssfile="css/index.css")
+
+@app.route('/mynfts')
+@app.route('/wishlist')
+@login_required
+def nftlist():
+    queryInfo = request.url.split('/')[-1]
+    return index(queryInfo)
 
 @app.route('/login')
 def login():

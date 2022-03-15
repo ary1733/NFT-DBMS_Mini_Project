@@ -1,26 +1,56 @@
-{% extends 'base.html' %}
-{% block content %}
-
+{% extends 'base.html' %} {% block content %}
+<style>
+  .navbar {
+    background: transparent !important;
+  }
+  
+  #searchbtn {
+    background: transparent !important;
+    border-color: #ffffff;
+    color: #ffffff;
+  }
+  
+  input,
+  textarea {
+    background-color: #f4fadf !important;
+    color: #000000 !important;
+  }
+  
+  .nav-link {
+    color: #ffffff !important;
+  }
+  
+  .main-container {
+    size: auto;
+    background-image: no-repeat;
+    background-repeat: no-repeat;
+    background-image: url("../static/images/top-image-1.png"), linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 1));
+    background-size: 100%;
+    background-position: top;
+  }
+</style>
 <div class="index-container">
-    <div class="title">
-        <p class="t1">Bored</p>
-        <p class="t2">Apes Yatch</p>
-        <p class="t3">Club</p>
-    </div>
-    <div class="trending">
-      <h1>Join the club!</h1>
-    </div>
-    <div class="trending cards-container row row-cols-1 row-cols-md-3 g-4">
-      {% for item in g.items %}
-        <div class="col">
-          <div class="card rounded-3" >
-            <img src= "/api/item/image/{{item.ImageId}}" class="card-img-top img-fluid ratio ratio-1x1" alt="Image">
-            <div class="card-body">
-              <h5 class="card-title">{{item.Name}}</h5>
-            </div>
-          </div>
+  <div class="title">
+    <p class="t1">Bored</p>
+    <p class="t2">Apes Yatch</p>
+    <p class="t3">Club</p>
+  </div>
+  <div class="trending">
+    <h1>Join the club!</h1>
+  </div>
+  <div class="trending cards-container row row-cols-1 row-cols-md-3 g-4">
+    {% for item in g.items %}
+    <div class="col">
+      <div class="card rounded-3">
+        <img src="/api/item/image/{{item.ImageId}}" class="card-img-top img-fluid ratio ratio-1x1" alt="Image">
+        <div class="card-body">
+          <a href="/item/{{item.Item_Id}}">
+            <h5 class="card-title">{{item.Name}}</h5>
+          </a>
         </div>
-      {% endfor %}
       </div>
+    </div>
+    {% endfor %}
+  </div>
 </div>
 {% endblock %}
