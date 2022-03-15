@@ -3,6 +3,7 @@ from .routes import base_bp
 from APP.utils import query_db, get_db, SCHEMA, login_required
 from APP.routes.item import get_item
 import os
+import datetime
 
 # from flask_cors import CORS
 
@@ -15,6 +16,15 @@ app.config['SESSION_TYPE'] = 'memcached'
 app.config['SECRET_KEY'] = 'super secret key'
 # Maybe required in future
 # cors = CORS(app)
+
+@app.template_filter('formatdatetime')
+def format_datetime(value, format="%d %b %Y %I:%M %p"):
+    """Format a date time to (Default): d Mon YYYY HH:MM P"""
+    if value is None:
+        return ""
+    value = datetime.datetime.fromisoformat(value)
+    return value.strftime(format)
+
 app.register_blueprint(base_bp, url_prefix="/api")
 
 def init_db():
@@ -42,7 +52,7 @@ def index():
     #     print(user)
     # return query_db('select * from user')
     # return "Hi"
-    return render_template("base.html")
+    return render_template("index.html",cssfile="css/index.css")
 
 @app.route('/login')
 def login():
@@ -90,7 +100,6 @@ def addadvert():
 
 @app.route("/item/<itemid>")
 def viewitem(itemid):
-    print(itemid)
     query_res = query_db(
         '''
         SELECT 
@@ -110,8 +119,30 @@ def viewitem(itemid):
         'SELECT ImageId from Item_Image where Item_Id = ?;',
         (itemid,),
     )
+    bid_res = query_db(
+        '''
+        SELECT Bid.*, User.Name as BidderName
+        FROM 
+        Item 
+        JOIN SaleAdvertisement ON Item.Item_Id = SaleAdvertisement.Item_Id
+        JOIN Bid ON Bid.AdvertisementId = SaleAdvertisement.AdvertisementId 
+        JOIN USER ON User.Email_Id = Bid.Bidder_Id 
+        WHERE SaleAdvertisement.End_Date is NULL 
+        AND Item.Item_Id = ?
+        ORDER BY Bid.Cost DESC;
+        ''',
+        (itemid,)
+    )
+    wishlistRes = query_db('SELECT COUNT(*) AS wishlistcnt FROM WISHLIST WHERE ITEM_Id = ?', (itemid,), True)
+    g.isWishlist = False
+    if(session.get('user') is not None):
+        print("logged in")
+        isWishListRes = query_db('SELECT COUNT(*) AS wishlistcnt FROM WISHLIST WHERE ITEM_Id = ? AND Email_Id = ? ', (itemid,session.get('user').get('email'),), True)
+        g.isWishlist = (isWishListRes.get('wishlistcnt') > 0)
+    g.wishlistCnt = wishlistRes.get('wishlistcnt')
     g.item = query_res
     g.images = [img['ImageId'] for img in image_res]
+    g.bids = bid_res
     print(g.item, g.images)
     if(g.item is None):
         return redirect(url_for('account'))
