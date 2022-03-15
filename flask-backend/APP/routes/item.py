@@ -164,7 +164,8 @@ def bid():
 @item_bp.route('/add_advert', methods=["POST"])   
 @api_session_required     
 def add_advert():
-    data = dict(request.form)
+    data = request.json
+    print(data, session.get('user'))
     data['Email_Id'] = session.get('user').get('email')
     # data = request.json
     # ! CHECKS
@@ -191,7 +192,7 @@ def add_advert():
         SELECT count(*) as cnt FROM SaleAdvertisement 
         WHERE Item_Id = ?
         and
-        End_Date is not NULL;
+        End_Date is NULL;
         """,
         (data.get('Item_Id'),),
         True

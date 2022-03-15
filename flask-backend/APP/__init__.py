@@ -146,10 +146,12 @@ def viewitem(itemid):
     wishlistRes = query_db('SELECT COUNT(*) AS wishlistcnt FROM WISHLIST WHERE ITEM_Id = ?', (itemid,), True)
     g.isWishlist = False
     g.canSell = False
+    g.canAddAdvert = False
     if(session.get('user') is not None):
         isWishListRes = query_db('SELECT COUNT(*) AS wishlistcnt FROM WISHLIST WHERE ITEM_Id = ? AND Email_Id = ? ', (itemid,session.get('user').get('email'),), True)
         g.isWishlist = (isWishListRes.get('wishlistcnt') > 0)
         g.canSell = (query_res.get('Email_Id') == session.get('user').get('email') and len(bid_res)>0)
+        g.canAddAdvert = (query_res.get('Email_Id') == session.get('user').get('email') and (len(bid_res) == 0))
     print(g.canSell)
     g.wishlistCnt = wishlistRes.get('wishlistcnt')
     g.item = query_res
