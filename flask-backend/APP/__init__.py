@@ -50,7 +50,7 @@ def index():
     #     print(user)
     # return query_db('select * from user')
     # return "Hi"
-    return render_template("base.html")
+    return render_template("index.html",cssfile="css/index.css")
 
 @app.route('/login')
 def login():
