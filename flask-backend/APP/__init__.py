@@ -71,7 +71,7 @@ def index(queryInfo = None):
         # g.images.append(image_res['ImageId'])
     return render_template("index.html",cssfile="css/index.css")
 
-@app.route('/mynfts')
+@app.route('/myitems')
 @app.route('/wishlist')
 @login_required
 def nftlist():
@@ -139,6 +139,8 @@ def viewitem(itemid):
         (itemid,),
         True
     )
+    if (query_res is None):
+        return "Item not found", 404
     image_res = query_db(
         'SELECT ImageId from Item_Image where Item_Id = ?;',
         (itemid,),

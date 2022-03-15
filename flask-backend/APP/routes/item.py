@@ -159,7 +159,7 @@ def search_item_query(searchTerm = None, queryInfo = None):
             """,
             ('%'+searchTerm+'%', ),False
         )
-    elif(queryInfo == "mynfts"):
+    elif(queryInfo == "myitems"):
         query_res = query_db(
             """
             SELECT Item_Id, Name, Description, Email_Id 
