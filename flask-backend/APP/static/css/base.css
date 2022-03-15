@@ -1,9 +1,0 @@
-.main-container{
-    size: auto;
-    background-image: no-repeat;
-    background-repeat: no-repeat;
-    background-image: url("../images/top-image-1.png"),
-    linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,1));
-    background-size: 100%;
-    background-position: top;
-}
