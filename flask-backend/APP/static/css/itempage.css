@@ -1,0 +1,110 @@
+*{
+    font: apple;
+    color: #ffffff;
+}
+
+.itempage-container{
+    margin-top: 2em;
+    font: apple;
+    font-weight: semi-bold;
+    font-size: 1rem;
+}
+
+.card{
+    background: transparent !important;
+}
+
+.cardtitle {
+    font-size: 1.5rem;
+    font-weight: regular;
+    pointer-events: none;
+    text-align: center !important;
+    color: #000000;
+    text-decoration: none !important;
+}
+
+.cardtitle:hover {
+    color: rgba(0,0,0,0.7);
+}
+
+.card-body {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-left: 1.5em !important;
+    padding-right: 1.5em !important;
+}
+
+.likebtn{
+    width:30px !important;
+}
+
+.likebtn:hover{
+    fill:rgba(0,0,0,0.7);
+}
+
+.details-container{
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.details{
+    display:flex !important;
+    flex-direction: row !important;
+    justify-content: space-around !important;
+    font-size: 1.2rem;
+}
+
+.owned-by ,.description{
+    text-align: center;
+    padding-right: 3em;
+}
+
+.headline{
+    text-align: center;
+    font: apple;
+    font-size: 2rem;
+    font-weight: semi-bold;
+}
+
+.owner-name,.description-text{
+    padding-top: 2em;
+    padding-bottom: 0.5em;
+}
+
+.owner-email{
+    padding-top: 0.5em;
+    padding-bottom: 1em;
+}
+
+.extras{
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-around !important;
+    font-size: 1.2em;
+    padding-top: 1em;
+    padding-bottom: 1em;
+}
+
+.itempage-btn {
+    background: transparent !important;
+    color: #ffffff;
+    border-color: white;
+    border-radius: 10px !important;
+    padding-left: 1.7em;
+    padding-right: 1.7em;
+    padding-top: 0.7em;
+    padding-bottom: 0.7em;
+}
+
+.itempage-btn:hover {
+    background: rgba(255,255,255,0.1) !important;
+    color: #ffffff;
+    border-color: #f4fadf;
+    border-radius: 10px !important;
+    padding-left: 1.7em;
+    padding-right: 1.7em;
+    padding-top: 0.7em;
+    padding-bottom: 0.7em;
+}
+

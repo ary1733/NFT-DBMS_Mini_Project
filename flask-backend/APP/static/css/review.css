@@ -30,3 +30,40 @@
   transform: scale(0.8);
   transition: 0.3s ease;
 }
+
+.review-text{
+  font: apple;
+  font-weight: regular;
+  font-size: 2.5rem;
+}
+
+.review-container{
+  padding: 1em;
+}
+
+.review-btn{
+  background: transparent !important;
+  color: #ffffff;
+  border-color: white;
+  border-radius: 10px !important;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+  padding-top: 0.3em;
+  padding-bottom: 0.3em;
+}
+
+.review-btn:hover {
+  background: rgba(255,255,255,0.1) !important;
+  color: #ffffff;
+  border-color: #f4fadf;
+  border-radius: 10px !important;
+  padding-left: 0.7em;
+  padding-right: 0.7em;
+  padding-top: 0.3em;
+  padding-bottom: 0.3em;
+}
+
+.fa-star{
+  width: 20px;
+  height: 20px;
+}

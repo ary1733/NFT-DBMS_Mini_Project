@@ -1,0 +1,229 @@
+{% extends 'base.html' %} {% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 text-center mx-auto">
+      <h3>
+        {{ g.item.ItemName }}
+      </h3>
+      <input type="hidden" id="itemid" value="{{ g.item.Item_Id }}" hidden>
+    </div>
+  </div>
+  <div class="row" style="margin-top:20px; margin-bottom:20px;">
+    {% if g.images|length > 0 %}
+    <div id="carouselExampleIndicators" class="carousel slide w-50 mx-auto" data-bs-ride="carousel">
+      <div class="carousel-indicators">
+        {% for iteration in range(g.images|length) %} <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="{{iteration}}" class="active" aria-current="true" aria-label="Slide {{iteration + 1}}"></button> {% endfor %}
+      </div>
+      <div class="carousel-inner">
+        {% for imgid in g.images %} {% if imgid == g.images|first %}
+        <div class="carousel-item active">
+          <img src="/api/item/image/{{imgid}}" class="d-block w-100 img-fluid" alt="...">
+        </div>
+        {% else %}
+        <div class="carousel-item">
+          <img src="/api/item/image/{{imgid}}" class="d-block w-100 img-fluid" alt="...">
+        </div>
+        {% endif %} {% endfor %}
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Previous</span>
+    </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Next</span>
+    </button>
+    </div>
+    {% else %}
+    <h3 class="text-center">No Images</h3>
+    {% endif %}
+  </div>
+  <div class="row">
+    <div class="col-md-6">
+      <h4>Owner</h4>
+      <p>Name : {{g.item.UserName}}(May be a link)</p>
+      <p>Email Id: {{g.item.Email_Id}}</p>
+    </div>
+    <div class="col-md-6">
+      <h4>Description</h4>
+      {% if g.item.Average_Rating %}
+      <p class="font-weight-light">Average Rating <b>{{ g.item.Average_Rating|round(1, 'ceil')}} / 5</b></p>
+      {% endif %}
+      <p class="text-danger"><i class="fa fa-solid fa-heart"></i> Wishlisted by <b>{{ g.wishlistCnt}} user(s)</b></p>
+      <p>{{g.item.Description}}</p>
+    </div>
+  </div>
+  <div class="row">
+    {% if g.canAddAdvert %}
+    <div class="col-md-3 p-2">
+      <button type="button" class="btn btn-primary w-100" data-bs-toggle="collapse" data-bs-target="#add-advert" aria-expanded="false" aria-controls="add-advert">
+        Add Advertisement
+      </button>
+    </div>
+    {% endif %} {% if g.bids|length > 0 %}
+    <div class="col-md-3 p-2">
+      <button type="button" class="btn btn-primary w-100" data-bs-toggle="collapse" data-bs-target="#bid-table" aria-expanded="false" aria-controls="bid-table">
+        Show Biddings
+      </button>
+    </div>
+    {% endif %} {% if g.bids|length > 0 %}
+    <div class="col-md-3 p-2">
+      <button type="button" class="btn btn-primary w-100" data-bs-toggle="collapse" data-bs-target="#add-bid" aria-expanded="false" aria-controls="add-bid">
+        Place a bid
+      </button>
+    </div>
+    {% endif %} {% if g.transactions|length > 0 %}
+    <div class="col-md-3 p-2">
+      <button type="button" class="btn btn-primary w-100" data-bs-toggle="collapse" data-bs-target="#show-transactions" aria-expanded="false" aria-controls="show-transactions">
+        Show Transactions
+      </button>
+    </div>
+    {% endif %} {% if g.canSell %}
+    <div class="col-md-3 p-2">
+      <button type="button" class="btn btn-primary w-100" onclick="handleSell(event)">
+        Sell
+      </button>
+    </div>
+    {% endif %}
+
+    <div class="col-md-3 p-2">
+      {% if g.isWishlist %}
+      <button type="button" class="btn btn btn-danger w-100" onclick="toggleWishList(event)">
+        <i class="fa fa-solid fa-heart"></i>Wishlisted
+      {% else %}
+      <button type="button" class="btn btn btn-outline-danger w-100" onclick="toggleWishList(event)">
+
+      <i class="fa fa-solid fa-heart"></i>Wishlist {% endif %}
+      </button>
+    </div>
+  </div>
+  <div class="row">
+    {% if g.bids|length > 0 %}
+    <div class="col-12">
+      <div class="collapse" id="bid-table">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Bid Id</th>
+              <th scope="col">Bidder Name</th>
+              <th scope="col">Bidder Email</th>
+              <th scope="col">Date Of Bid</th>
+              <th scope="col">Bid Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for bidDetails in g.bids %}
+            <tr>
+              <th scope="row">{{bidDetails.Bid_Id}}</th>
+              <td>{{bidDetails.BidderName}}</td>
+              <td>{{bidDetails.Bidder_Id}}</td>
+              <td>{{bidDetails.Date|formatdatetime}}</td>
+              <td>{{bidDetails.Cost}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %} {% if g.bids|length > 0 %}
+    <div class="col-12">
+      <div class="collapse" id="add-bid">
+        {% include 'addbid.html' %}
+      </div>
+    </div>
+    {% endif %} {% if g.transactions|length > 0 %}
+    <div class="col-12">
+      <div class="collapse" id="show-transactions">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th scope="col">Transaction Id</th>
+              <th scope="col">Buyer Name</th>
+              <th scope="col">Buyer Id</th>
+              <th scope="col">Seller Name</th>
+              <th scope="col">Seller Id</th>
+              <th scope="col">Date Of Transaction</th>
+              <th scope="col">Transaction Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for transaction in g.transactions %}
+            <tr>
+              <th scope="row">{{transaction.Transaction_ID}}</th>
+              <td>{{transaction.BuyerName}}</td>
+              <td>{{transaction.BuyerEmail_Id}}</td>
+              <td>{{transaction.SellerName}}</td>
+              <td>{{transaction.SellerEmail_Id}}</td>
+              <td>{{transaction.Date|formatdatetime}}</td>
+              <td>{{transaction.Cost}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {% endif %} {% if g.canAddAdvert %}
+    <div class="col-12">
+      <div class="collapse" id="add-advert">
+        {% include 'addadvert.html' %}
+      </div>
+    </div>
+    {% endif %}
+
+  </div>
+  <div class="row">
+    {% include 'review.html' %}
+  </div>
+</div>
+<script>
+  function toggleWishList(event) {
+    console.log(event);
+    let dataJson = {
+      'Item_Id': document.getElementById('itemid').value,
+    }
+    fetch('/api/item/toggleWishlist/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(dataJson)
+    }).then(function(response) {
+      return response.json();
+    }).then(function(response) {
+      console.log(response);
+      if (response.message == "success") {
+        location = location;
+      } else {
+        // add login check
+        alert(JSON.stringify(response));
+      }
+    }).catch(function(error) {
+      console.log(error);
+    })
+  }
+
+  function handleSell(event) {
+    if (confirm('Are you sure you want to Sell the item?')) {
+      fetch('/api/item/sell/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          AdvertisementId: document.getElementById('AdvertisementId').value,
+          Item_Id: document.getElementById('itemid').value,
+        })
+      }).then(function(response) {
+        return response.json();
+      }).then(function(response) {
+        if (response.message == "success") {
+          alert('Transaction Completed');
+          location = location;
+        } else {
+          alert(JSON.stringify(response))
+        }
+      })
+    }
+  }
+</script>
+{% endblock content %}

@@ -193,7 +193,7 @@ def viewitem(itemid):
     if(g.item is None):
         return redirect(url_for('account'))
 
-    return render_template("itempage.html")
+    return render_template("itempage.html",cssfile='css/itempage.css')
 
 
 @app.route("/map")

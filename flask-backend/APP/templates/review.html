@@ -1,29 +1,29 @@
 <link rel="stylesheet" href="{{url_for('static', filename='css/review.css')}}">
 <!------ Include the above in your HEAD tag ---------->
 
-<div class="container" style="margin-top:40px; margin-bottom:60px;">
+<div class="container" style="margin-top:2em; margin-bottom:2em;">
   <div class="row">
-    <h3 class="col text-center">Reviews</h3>
+    <h3 class="col review-text text-center">Reviews</h3>
   </div>
   <div class="row" id="review-list">
   </div>
-  <div class="row">
-    <div class="col-md-6 mb-2">
+  <div class="row review-container">
+    <div class="col-md-6 mb-2 w-100">
       <div class="well well-sm">
         <div class="text-right">
-          <h4>
+          <h4 class="py-3"> 
             Leave a Review
           </h4>
         </div>
 
-        <div class="row" id="post-review-box">
-          <div class="col-md-12">
+        <div class="row pe-3" id="post-review-box">
+          <div class="col-md-6 w-100">
             <form accept-charset="UTF-8" onsubmit="handleReview(event)">
-              <textarea class="form-control animated" name="Review" placeholder="Enter your review here..." rows="5"></textarea>
+              <textarea class="form-control animated w-100 " name="Review" placeholder="Enter your review here..." rows="5"></textarea>
 
               <div class="text-right">
                 <div class="rating-css">
-                  <div class="star-icon">
+                  <div class="star-icon py-3">
                     <input type="radio" name="Rating" id="rating1" value="1">
                     <label for="rating1" class="fa fa-star"></label>
                     <input type="radio" name="Rating" id="rating2" value="2">
@@ -36,7 +36,7 @@
                     <label for="rating5" class="fa fa-star"></label>
                   </div>
                 </div>
-                <button class="btn btn-success btn-lg" type="submit">Add</button>
+                <button class="btn btn-success btn-lg review-btn" type="submit">Add</button>
               </div>
             </form>
           </div>
