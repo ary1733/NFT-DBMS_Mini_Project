@@ -14,6 +14,8 @@ def get_db():
     db = getattr(g, '_database', None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
+        # This line is necessary because by default the foreign_keys constraint is off for backwards compatibility.
+        db.execute('PRAGMA foreign_keys = ON;')
     db.row_factory = make_dicts
     return db
 

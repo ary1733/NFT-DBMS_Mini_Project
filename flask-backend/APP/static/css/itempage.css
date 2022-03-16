@@ -1,4 +1,4 @@
-*{
+.container{
     font: apple;
     color: #ffffff;
 }
@@ -43,9 +43,14 @@
     fill:rgba(0,0,0,0.7);
 }
 
-.details-container{
+.detailsmain-container{
     margin-top: auto;
     margin-bottom: auto;
+}
+
+.details-container{
+    display: flex;
+    flex-direction: column !important;
 }
 
 .details{
@@ -60,7 +65,7 @@
     padding-right: 3em;
 }
 
-.headline{
+.headline,.item-name{
     text-align: center;
     font: apple;
     font-size: 2rem;
@@ -91,6 +96,7 @@
     color: #ffffff;
     border-color: white;
     border-radius: 10px !important;
+    width: 100%;
     padding-left: 1.7em;
     padding-right: 1.7em;
     padding-top: 0.7em;
@@ -102,6 +108,7 @@
     color: #ffffff;
     border-color: #f4fadf;
     border-radius: 10px !important;
+    width: 100%;
     padding-left: 1.7em;
     padding-right: 1.7em;
     padding-top: 0.7em;

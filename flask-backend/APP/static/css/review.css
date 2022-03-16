@@ -1,35 +1,3 @@
-.animated {
-  -webkit-transition: height 0.2s;
-  -moz-transition: height 0.2s;
-  transition: height 0.2s;
-}
-
-.review-star-selected {
-  color: #ff9100;
-}
-
-.review-star-not-selected {
-  color: #838383;
-}
-
-.rating-css div {
-  color: #ff9100;
-  font-family: sans-serif;
-  text-transform: uppercase;
-}
-
-.rating-css input {
-  display: none;
-}
-
-.rating-css input:checked+label~label {
-  color: #838383;
-}
-
-.rating-css label:active {
-  transform: scale(0.8);
-  transition: 0.3s ease;
-}
 
 .review-text{
   font: apple;
@@ -37,7 +5,7 @@
   font-size: 2.5rem;
 }
 
-.review-container{
+.review-container,.review-main-container{
   padding: 1em;
 }
 
@@ -63,7 +31,40 @@
   padding-bottom: 0.3em;
 }
 
-.fa-star{
+/* .fa-star{
   width: 20px;
   height: 20px;
+} */
+
+.animated {
+  -webkit-transition: height 0.2s !important;
+  -moz-transition: height 0.2s !important;
+  transition: height 0.2s !important;
+}
+
+.review-star-selected {
+  color: #ff9100 !important;
+}
+
+.review-star-not-selected {
+  color: #838383 !important;
+}
+
+.rating-css div {
+  color: #ff9100 !important;
+  font-family: sans-serif !important;
+  text-transform: uppercase !important;
+}
+
+.rating-css input {
+  display: none !important;
+}
+
+.rating-css input:checked+label~label {
+  color: #838383 !important;
+}
+
+.rating-css label:active {
+  transform: scale(0.8) !important;
+  transition: 0.3s ease !important;
 }

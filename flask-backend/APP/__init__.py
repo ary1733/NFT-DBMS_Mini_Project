@@ -66,8 +66,26 @@ def index(queryInfo = None):
         if len(image_res) > 0:
             items.append(item)
             items[-1]['ImageId'] = image_res[0]['ImageId']
-        
-        g.items = items
+            if('user' in session):
+                iswishlist = query_db('SELECT Count(*) AS cnt FROM Wishlist WHERE Item_Id = ? AND Email_Id = ?;', (item.get('Item_Id'), session.get('user').get('email')), True)
+                if(iswishlist.get('cnt') > 0):
+                    items[-1]['IsWishlisted'] = True
+                else:
+                    items[-1]['IsWishlisted'] = False
+            else:
+                items[-1]['IsWishlisted'] = False
+        else:
+            items.append(item)
+            items[-1]['ImageId'] = -1
+            if('user' in session):
+                iswishlist = query_db('SELECT Count(*) AS cnt FROM Wishlist WHERE Item_Id = ? AND Email_Id = ?;', (item.get('Item_Id'), session.get('user').get('email')), True)
+                if(iswishlist.get('cnt') > 0):
+                    items[-1]['IsWishlisted'] = True
+                else:
+                    items[-1]['IsWishlisted'] = False
+            else:
+                items[-1]['IsWishlisted'] = False
+    g.items = items
         # g.images.append(image_res['ImageId'])
     return render_template("index.html",cssfile="css/index.css")
 
@@ -195,7 +213,7 @@ def viewitem(itemid):
     if(g.item is None):
         return redirect(url_for('account'))
 
-    return render_template("itempage.html",cssfile='css/itempage.css')
+    return render_template("itempage.html", cssfile="css/itempage.css")
 
 
 @app.route("/map")
