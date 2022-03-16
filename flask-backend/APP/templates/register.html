@@ -98,7 +98,7 @@
           alert("Please enter a valid Name");
           return;
         }
-        fetch("api/user/add/",{
+        fetch("/api/user/add/",{
           method:"POST",
           headers: {
             "content-type": "application/json",

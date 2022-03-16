@@ -55,7 +55,7 @@
       object[key] = value;
     });
     object.Item_Id = document.getElementById('itemid').value;
-    fetch('/api/item/write_review', {
+    fetch('/api/item/write_review/', {
       method: "POST",
       headers: {
         "content-type": "application/json",

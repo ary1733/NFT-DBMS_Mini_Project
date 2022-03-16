@@ -81,8 +81,10 @@ def add_item():
 
 # Delete
 @item_bp.route("/delete/", methods=["POST"])
+@api_session_required
 def delete_item():
     data = request.json
+    data['Email_Id'] = session.get('user').get('email')
     if(data.get('Email_Id') is None):
         return make_response(jsonify({"message": "Not a Valid Email Id"}), 200)
     if(data.get('Item_Id') is None):
@@ -95,7 +97,7 @@ def delete_item():
         (data.get('Item_Id'), data.get('Email_Id')),
         True
     )
-    return make_response(jsonify({"message": query_res}), 200)
+    return make_response(jsonify({"message": "success" if query_res else "failure"}), 200)
 
 # Update
 @item_bp.route("/update/", methods=["POST"])
@@ -266,7 +268,7 @@ def add_advert():
     return make_response(jsonify({"message": "success" if query_res else "failure"}), 200)
 
 # Harshit
-@item_bp.route("/write_review", methods=["POST"])
+@item_bp.route("/write_review/", methods=["POST"])
 @api_session_required
 def write_review():
     data = request.json
