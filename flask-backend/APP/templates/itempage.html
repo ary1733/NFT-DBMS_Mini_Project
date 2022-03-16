@@ -76,12 +76,19 @@
           <i class="fa fa-solid fa-heart"></i> Add to Wishlist {% endif %}
         </button>
     </div>
+    {% if g.isOwner %}
+    <div class="col-md-3 p-2">
+      <button type="button" class="btn btn-danger w-100" onclick="handleDelete(event)">
+        Delete
+      </button>
+    </div>
+    {% endif %}
   </div>
   <div class="row">
     {% if g.bids|length > 0 %}
     <div class="col-12">
-      <div class="collapse" id="bid-table">
-        <table class="table table-hover">
+      <div class="collapse table-responsive" id="bid-table">
+        <table class="table table-dark table-hover">
           <thead>
             <tr>
               <th scope="col">Bid Id</th>
@@ -113,8 +120,8 @@
     </div>
     {% endif %} {% if g.transactions|length > 0 %}
     <div class="col-12">
-      <div class="collapse" id="show-transactions">
-        <table class="table table-hover">
+      <div class="collapse table-responsive" id="show-transactions">
+        <table class="table table-dark table-hover">
           <thead>
             <tr>
               <th scope="col">Transaction Id</th>
@@ -204,6 +211,31 @@
         }
       })
     }
+  }
+  function handleDelete(event) {
+    let itemJson = {
+      Item_Id : document.getElementById('itemid').value
+    }
+    if(confirm("Are you sure you want to delete this item?"))
+    {
+      fetch('/api/item/delete/',{
+        method: 'POST',
+        headers: {
+          'Content-Type':'application/json'
+        },
+        body: JSON.stringify(itemJson)
+      }).then(function(response) {
+        return response.json();
+      }).then(function(response) {
+        if (response.message == "success") {
+          alert("Item Deleted!");
+          location = '/myitems';
+        }
+        else {
+          alert.log(JSON.stringify(response));
+        }
+      })
+      }
   }
 </script>
 {% endblock content %}
