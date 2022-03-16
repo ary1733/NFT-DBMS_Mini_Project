@@ -19,17 +19,30 @@
   .nav-link {
     color: #ffffff !important;
   }
-  
-  .main-container {
-    size: auto;
-    background-image: no-repeat;
-    background-repeat: no-repeat;
-    background-image: url("../static/images/top-image-1.png"), linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 1));
-    background-size: 100%;
-    background-position: top;
+
+  .myitems-title, .wishlist-title{
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    text-align: center;
+    font: apple;
+    font-size: 2.5rem;
+    font-weight: semi-bold;
+    color: #ffffff;
   }
+  
+  .no-item-messg
+  {
+    text-align: center;
+    font: apple;
+    font-size: 1.5rem;
+    font-weight: semi-bold;
+    color: rgba(255,255,255,0.5);
+  }
+  
 </style>
 <div class="index-container">
+
+  {% if request.endpoint == 'index' %}
   <div class="title">
     <p class="t1">Bored</p>
     <p class="t2">Apes Yatch</p>
@@ -38,6 +51,14 @@
   <div class="trending">
     <h1>Join the club!</h1>
   </div>
+  {% endif %}
+  {% if request.endpoint == 'myitems' %}
+  <h1 class="myitems-title">Your Items</h1>
+  {% endif %}
+  {% if request.endpoint == 'wishlist' %}
+  <h1 class="wishlist-title">Your Wishlist</h1>
+  {% endif %}
+
   <div class="trending cards-container row row-cols-1 row-cols-md-3 g-4">
     {% for item in g.items %}
     <div class="col">
@@ -52,5 +73,10 @@
     </div>
     {% endfor %}
   </div>
+
+  {% if g.items == [] %}
+  <h2 class="no-item-messg">No items found!</h2>
+  {% endif %}
+
 </div>
 {% endblock %}

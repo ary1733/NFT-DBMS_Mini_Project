@@ -72,9 +72,14 @@ def index(queryInfo = None):
     return render_template("index.html",cssfile="css/index.css")
 
 @app.route('/myitems')
+@login_required
+def myitems():
+    queryInfo = request.url.split('/')[-1]
+    return index(queryInfo)
+
 @app.route('/wishlist')
 @login_required
-def nftlist():
+def wishlist():
     queryInfo = request.url.split('/')[-1]
     return index(queryInfo)
 
